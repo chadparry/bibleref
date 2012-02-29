@@ -3,7 +3,7 @@ The bibleref-mouth package
 The bibleref-mouth package is a LaTeX2e library that allows Bible references to
 be formatted in a consistent way. It is similar to the bibleref package, except
 that the formatting macros are all purely expandable. That is, they are all
-implemented in TEX’s mouth. This means that they can be used in any expandable
+implemented in TEX's mouth. This means that they can be used in any expandable
 context, such as an argument to the \url command. To write a reference, the
 document should use the command \bibleref{reference}.
 
