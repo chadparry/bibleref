@@ -628,7 +628,7 @@
 % 
 % \begin{macro}{\brm@parseverse}
 % After a \texttt{:} delimiter, the next characters must be a verse number.
-% The verse is parsed by \verb|\brm@parseverse|\-\marg{book}\marg{chapter}\-\marg{remainingtext}
+% The verse is parsed by \verb|\brm@parseverse|\-\marg{book}\marg{chapter}\-\marg{remainingtext}.
 % The \cs{brm@parsenumber} helper will pass the number and the remaining text to the \cs{brm@checkversetrailer} callback.
 % 
 % When this command is called, the cursor will be at: \texttt{1 Cor 15:\cursor20-1 Cor 15:22,40-42;16}.
@@ -1711,7 +1711,7 @@
 % \end{macro}
 % 
 % \begin{macro}{\brm@foreachbook@abbrv}
-% The abbreviated book names are accessible through \verb|\brm@foreachbook@abbrv|\-\marg{callback}\-\marg{period}\-\marg{booknumberstyle}\marg{epistlenumberstyle}
+% The abbreviated book names are accessible through \verb|\brm@foreachbook@abbrv|\-\marg{callback}\-\marg{period}\-\marg{booknumberstyle}\marg{epistlenumberstyle}.
 % The callback argument is expected to have the signature \callback\-\marg{book}\marg{bookname}.
 % The two number style arguments are expected to be functions with the signature \callback\marg{number}.
 %    \begin{macrocode}
@@ -1794,7 +1794,7 @@
 % \end{macro}
 % 
 % \begin{macro}{\brm@foreachbook@altabbrv}
-% The alternative abbreviated book names are accessible through \verb|\brm@foreachbook@altabbrv|\-\marg{callback}\-\marg{period}\marg{space}\-\marg{booknumberstyle}\marg{epistlenumberstyle}
+% The alternative abbreviated book names are accessible through \verb|\brm@foreachbook@altabbrv|\-\marg{callback}\-\marg{period}\marg{space}\-\marg{booknumberstyle}\marg{epistlenumberstyle}.
 % The callback argument is expected to have the signature \callback\-\marg{book}\marg{bookname}.
 % The two number style arguments are expected to be functions with the signature \callback\marg{number}.
 %    \begin{macrocode}
