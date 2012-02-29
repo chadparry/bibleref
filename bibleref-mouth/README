@@ -1,0 +1,30 @@
+The bibleref-mouth package
+
+The bibleref-mouth package is a LaTeX2e library that allows Bible references to
+be formatted in a consistent way. It is similar to the bibleref package, except
+that the formatting macros are all purely expandable. That is, they are all
+implemented in TEX’s mouth. This means that they can be used in any expandable
+context, such as an argument to the \url command. To write a reference, the
+document should use the command \bibleref{reference}.
+
+This package depends on the following packages.
+ * fmtcount
+ * hyperref
+
+To extract the code, run:
+ * tex bibleref-mouth.ins
+Then put bibleref-mouth.sty into a directory searched by TeX.
+
+To extract the documentation, run:
+ * pdflatex bibleref-mouth.dtx
+
+Copyright 2012 Chad Parry
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License, either version 1.3
+of this license or (at your option) any later version.
+The latest version of this license is in
+  http://www.latex-project.org/lppl.txt
+and version 1.3 or later is part of all distributions of LaTeX
+version 2005/12/01 or later.
+
