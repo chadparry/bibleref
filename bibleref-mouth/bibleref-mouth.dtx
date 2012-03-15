@@ -150,8 +150,8 @@
 % New custom books and abbreviations can be added, according to the pattern shown in section \ref{booknames}.
 % 
 % \makeatletter
-% \brm@foreachbook@abbrv{\providebiblebook{abbrvname}}{.}{\brm@number@arabicspace}{\brm@number@arabicspace}
-% \brm@foreachbook@altabbrv{\providebiblebook{altabbrvname}}{.}{\ }{\brm@number@arabicspace}{\brm@number@arabicspace}
+% \brm@foreachbook@abbrv{\definebiblebook{abbrvname}}{.}{\brm@number@arabicspace}{\brm@number@arabicspace}
+% \brm@foreachbook@altabbrv{\definebiblebook{altabbrvname}}{.}{\ }{\brm@number@arabicspace}{\brm@number@arabicspace}
 % \newcommand{\bookrow}[2]{#2 & \brm@bookname{altabbrvname}{#1} & \brm@bookname{abbrvname}{#1}\\}
 % \afterpage{
 % \clearpage
@@ -205,7 +205,7 @@
 % \DescribeMacro{\setbiblestyle}
 % The style of the rendered reference can be changed by calling \verb|\setbiblestyle|\marg{stylename}.
 % The supplied styles, with an example reference, are shown in Table~\ref{styles}.
-% Custom styles can also be added using the command \cs{providebiblestyle}, as shown in \ref{defaultstyles}.
+% Custom styles can also be added using the command \cs{definebiblestyle}, as shown in \ref{defaultstyles}.
 % 
 % \newcommand{\stylerow}[1]{#1 & \setbiblestyle{#1}\bibleref{2 Tim. 3:16-17}\\}
 % \begin{table}[tbh]
@@ -245,7 +245,7 @@
 % \begin{macro}{\setbiblestyle}
 % The user can set which reference style is in effect with \verb|\setbiblestyle|\marg{stylename}.
 % The available styles are defined in Table~\ref{styles}.
-% Custom styles can also be added using the command \hyperlink{providebiblestyle}{\cs{providebiblestyle}}.
+% Custom styles can also be added using the command \hyperlink{definebiblestyle}{\cs{definebiblestyle}}.
 % This command just stores the style for later use by \cs{bibleref}.
 % 
 % Note that this command is itself \emph{not} expandable, so it must be called outside of any expandable context.
@@ -1346,12 +1346,12 @@
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\providebiblestyle}
-% To create a new Bible style, the user calls \verb|\providebiblestyle|\marg{stylename}\marg{formatter}.
+% \begin{macro}{\definebiblestyle}
+% To create a new Bible style, the user calls \verb|\definebiblestyle|\marg{stylename}\marg{formatter}.
 % This command creates a style with the signature \verb|\brm@style@|\meta{stylename}\-\marg{beginpassage}\-\marg{endpassage}\-\marg{list}.
 % The formatter gets expanded from within an environment where those three arguments are defined.
 %    \begin{macrocode}
-\newcommand*{\providebiblestyle}[2]{%
+\newcommand*{\definebiblestyle}[2]{%
     \expandafter\def\csname\brm@style{#1}\endcsname##1##2##3{%
         #2%
     }%
@@ -1359,37 +1359,37 @@
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\providebiblebookalias}
-% A new Bible book alias can be created with \verb|\providebiblebookalias|\marg{book}\marg{alias}.
+% \begin{macro}{\definebiblebookalias}
+% A new Bible book alias can be created with \verb|\definebiblebookalias|\marg{book}\marg{alias}.
 % An alias is the name that is specified to the \cs{bibleref} command.
 % Every book needs to have aliases defined for users to refer to it.
 % A book can have as many different aliases as the user wishes to defined.
-% This command expands the alias name and delegates to \cs{brm@providebiblebookalias}.
+% This command expands the alias name and delegates to \cs{brm@definebiblebookalias}.
 % 
 % Because the parser ignores spaces, an alias name also cannot contain spaces. If an alias is
 % created that contains spaces anyway, then it will be impossible for users to reference it.
 %    \begin{macrocode}
-\newcommand*{\providebiblebookalias}[2]{%
-    \expandafter\brm@providebiblebookalias\expandafter%
+\newcommand*{\definebiblebookalias}[2]{%
+    \expandafter\brm@definebiblebookalias\expandafter%
         {\romannumeral-`0#2}{#1}%
 }
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\brm@providebiblebookalias}
-% A new Bible book alias is created by \verb|\brm@providebiblebookalias|\marg{alias}\marg{book}.
+% \begin{macro}{\brm@definebiblebookalias}
+% A new Bible book alias is created by \verb|\brm@definebiblebookalias|\marg{alias}\marg{book}.
 %    \begin{macrocode}
-\newcommand*{\brm@providebiblebookalias}[2]{%
+\newcommand*{\brm@definebiblebookalias}[2]{%
     \expandafter\def\csname\brm@bookalias{#1}\endcsname{#2}%
 }
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\providebiblebook}
-% A new stylized Bible book name can be created with \verb|\providebiblebook|\marg{stylename}\marg{book}\marg{bookname}.
+% \begin{macro}{\definebiblebook}
+% A new stylized Bible book name can be created with \verb|\definebiblebook|\marg{stylename}\marg{book}\marg{bookname}.
 % The book name needs to be defined for each book and each style before it can be referenced by a user.
 %    \begin{macrocode}
-\newcommand*{\providebiblebook}[3]{%
+\newcommand*{\definebiblebook}[3]{%
     \expandafter\def\csname\brm@bookref{#1}{#2}\endcsname{#3}%
 }
 %    \end{macrocode}
@@ -1952,55 +1952,55 @@
 % 
 % \subsubsection{Book Aliases}
 % 
-% Various book aliases are provided for all the book names, including versions of the full names, the abbreviated names, and the alternative abbreviated names.
+% Various book aliases are defined for all the book names, including versions of the full names, the abbreviated names, and the alternative abbreviated names.
 % The book numbers can be done with either Arabic or Roman numerals.
 % The abbreviations are supported both with and without periods.
 % In order to support all such combinations, there are \oldstylenums{10} different definitions.
 % (If there were more than \oldstylenums{24} combinations, then it would start to be necessary to programmatically keep track of them, but this small number can still be maintained manually).
 %    \begin{macrocode}
-\brm@foreachbook@full{\providebiblebookalias}{}{}{}{}{}{}%
+\brm@foreachbook@full{\definebiblebookalias}{}{}{}{}{}{}%
     {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@full{\providebiblebookalias}{}{}{}{}{}{}%
+\brm@foreachbook@full{\definebiblebookalias}{}{}{}{}{}{}%
     {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@abbrv{\providebiblebookalias}{}%
+\brm@foreachbook@abbrv{\definebiblebookalias}{}%
     {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@abbrv{\providebiblebookalias}{}%
+\brm@foreachbook@abbrv{\definebiblebookalias}{}%
     {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@abbrv{\providebiblebookalias}{.}%
+\brm@foreachbook@abbrv{\definebiblebookalias}{.}%
     {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@abbrv{\providebiblebookalias}{.}%
+\brm@foreachbook@abbrv{\definebiblebookalias}{.}%
     {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\providebiblebookalias}{}{}%
+\brm@foreachbook@altabbrv{\definebiblebookalias}{}{}%
     {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\providebiblebookalias}{}{}%
+\brm@foreachbook@altabbrv{\definebiblebookalias}{}{}%
     {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@altabbrv{\providebiblebookalias}{.}{}%
+\brm@foreachbook@altabbrv{\definebiblebookalias}{.}{}%
     {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\providebiblebookalias}{.}{}%
+\brm@foreachbook@altabbrv{\definebiblebookalias}{.}{}%
     {\brm@number@upperromanascii}{\brm@number@upperromanascii}
 %    \end{macrocode}
 % 
 % \subsubsection{Formatted Book Names}
 % 
 % Several different forms of book names are created by default.
-% These commands define the callback as \verb|\providebiblebook{|\meta{stylename}\verb|}|, which creates a version of each book name in the given style.
+% These commands define the callback as \verb|\definebiblebook{|\meta{stylename}\verb|}|, which creates a version of each book name in the given style.
 % 
 %    \begin{macrocode}
-\brm@foreachbook@full{\providebiblebook{fullname}}{\ }{}{}{}{}{}%
+\brm@foreachbook@full{\definebiblebook{fullname}}{\ }{}{}{}{}{}%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
-\brm@foreachbook@abbrv{\providebiblebook{jerusalem}}{}%
+\brm@foreachbook@abbrv{\definebiblebook{jerusalem}}{}%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
-\brm@foreachbook@altabbrv{\providebiblebook{anglosaxon}}{.}{\ }%
+\brm@foreachbook@altabbrv{\definebiblebook{anglosaxon}}{.}{\ }%
     {\brm@number@upperromanspace}{\brm@number@upperromanspace}
-\brm@foreachbook@altabbrv{\providebiblebook{JEH}}{.}{\ }%
+\brm@foreachbook@altabbrv{\definebiblebook{JEH}}{.}{\ }%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
-\brm@foreachbook@full{\providebiblebook{MHRA}}{\ }{}{}{}{}{}%
+\brm@foreachbook@full{\definebiblebook{MHRA}}{\ }{}{}{}{}{}%
     {\brm@number@scromanspace}{\brm@number@scromanspace}
-\brm@foreachbook@altabbrv{\providebiblebook{NTG}}{}{\ }%
+\brm@foreachbook@altabbrv{\definebiblebook{NTG}}{}{\ }%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
-\brm@foreachbook@altabbrv{\providebiblebook{MLA}}{.}{\ }%
+\brm@foreachbook@altabbrv{\definebiblebook{MLA}}{.}{\ }%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
-\brm@foreachbook@altabbrv{\providebiblebook{chicago}}{.}{\ }%
+\brm@foreachbook@altabbrv{\definebiblebook{chicago}}{.}{\ }%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
 %    \end{macrocode}
 % 
@@ -2011,41 +2011,41 @@
 % Each one is made to delegate to the \cs{standardbiblestyle} helper.
 % The parameters to that helper determine the punctuation and spacing that will be used in the formatted output.
 % The helper's signature is \verb|\standardbiblestyle|\-\marg{bookstyle}\-\marg{bkchsep}\marg{chvsep}\-\marg{bksep}\marg{chsep}\marg{vsep}\-\marg{rangesep}\-\marg{chapterstyle}\marg{versestyle}\-\marg{beginpassage}\-\marg{endpassage}\-\marg{list}.
-% The \cs{providebiblestyle} command creates an environment in which three parameters are defined, for the begin passage, the end passage, and the passage list.
+% The \cs{definebiblestyle} command creates an environment in which three parameters are defined, for the begin passage, the end passage, and the passage list.
 % 
 % New styles can be defined by creating new definitions like the ones here, except with different punctuation or spacing.
 % Examples of how to define custom styles are found in the \textsf{bibleref-lds} package.
 % 
 %    \begin{macrocode}
-\providebiblestyle{fullname}{\standardbiblestyle{fullname}%
+\definebiblestyle{fullname}{\standardbiblestyle{fullname}%
     {\ }{:}{; }{;}{,}{--}%
     {\brm@number@arabic}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{jerusalem}{\standardbiblestyle{jerusalem}%
+\definebiblestyle{jerusalem}{\standardbiblestyle{jerusalem}%
     {\ }{:}{; }{; }{,}{--}%
     {\brm@number@arabic}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{anglosaxon}{\standardbiblestyle{anglosaxon}%
+\definebiblestyle{anglosaxon}{\standardbiblestyle{anglosaxon}%
     {\ }{.}{; }{; }{,}{--}%
     {\brm@number@upperroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{JEH}{\standardbiblestyle{JEH}%
+\definebiblestyle{JEH}{\standardbiblestyle{JEH}%
     {\ }{.~}{; }{; }{,}{--}%
     {\brm@number@lowerroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{MHRA}{\standardbiblestyle{MHRA}%
+\definebiblestyle{MHRA}{\standardbiblestyle{MHRA}%
     {\ }{.~}{; }{; }{,}{--}%
     {\brm@number@lowerroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{NTG}{\standardbiblestyle{NTG}%
+\definebiblestyle{NTG}{\standardbiblestyle{NTG}%
     {\ }{,}{; }{; }{,}{--}%
     {\brm@number@lowerroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{MLA}{\standardbiblestyle{MLA}%
+\definebiblestyle{MLA}{\standardbiblestyle{MLA}%
     {\ }{.}{; }{; }{,}{--}%
     {\brm@number@lowerroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
-\providebiblestyle{chicago}{\standardbiblestyle{chicago}%
+\definebiblestyle{chicago}{\standardbiblestyle{chicago}%
     {\ }{\,:\,}{; }{; }{,}{--}%
     {\brm@number@lowerroman}{\brm@number@arabic}%
     {#1}{#2}{#3}}
@@ -2099,7 +2099,7 @@
 % 
 % The style of book names spells out all the titles and uses English text instead of numerals.
 %    \begin{macrocode}
-\brm@foreachbook@full{\providebiblebook{text}}%
+\brm@foreachbook@full{\definebiblebook{text}}%
     {\ }%
     {Book of }{Gospel according to St.~}%
     {Epistle to }{Epistle to the }{Epistle of }%
@@ -2109,7 +2109,7 @@
 % 
 % The style of references spells out all the conjunctions and numbers.
 %    \begin{macrocode}
-\providebiblestyle{text}{\standardbiblestyle{text}%
+\definebiblestyle{text}{\standardbiblestyle{text}%
     {,\ }{\ }{,\ and\ }{,\ and\ }{,\ and\ }{\ to\ }%
     {\brm@number@stomach@chapter}{\brm@number@stomach@verse}%
     {#1}{#2}{#3}}
@@ -2128,17 +2128,17 @@
 % Bible Gateway uses the full names of the books and Arabic numerals.
 % The ASCII version of the space character must be used, because a non-breaking space would not URL-encode to a space character correctly.
 %    \begin{macrocode}
-\brm@foreachbook@full{\providebiblebook{biblegateway.com}}%
+\brm@foreachbook@full{\definebiblebook{biblegateway.com}}%
     {\ }{}{}{}{}{}%
     {\brm@number@arabicspaceascii}{\brm@number@arabicspaceascii}
 %    \end{macrocode}
 % 
-% \begin{macro}{\providebiblegatewayurl}
+% \begin{macro}{\definebiblegatewayurl}
 % The Bible Gateway site publishes \href{http://www.biblegateway.com/versions/}{many versions of the Bible}, (e.g. \href{http://www.biblegateway.com/versions/New-International-Version-NIV-Bible/}{NIV}).
-% A user that wishes to have their preferred version embedded in the URL should use \verb|\providebiblegatewayurl|\-\marg{urlstylename}\-\marg{version}.
+% A user that wishes to have their preferred version embedded in the URL should use \verb|\definebiblegatewayurl|\-\marg{urlstylename}\-\marg{version}.
 %    \begin{macrocode}
-\newcommand*{\providebiblegatewayurl}[2]{%
-    \providebiblestyle{#1}{%
+\newcommand*{\definebiblegatewayurl}[2]{%
+    \definebiblestyle{#1}{%
         \brm@biblegatewayurl@style{#2}{##1}{##2}{##3}%
     }%
 }
@@ -2189,17 +2189,17 @@
 % A URL style that creates links for Bible Gateway references is defined.
 % Users may define other styles for different versions of the Bible at Bible Gateway.
 %    \begin{macrocode}
-\providebiblegatewayurl{biblegateway.com-url}{NIV}
+\definebiblegatewayurl{biblegateway.com-url}{NIV}
 %    \end{macrocode}
 % 
-% \begin{macro}{\providebiblegatewaystyle}
+% \begin{macro}{\definebiblegatewaystyle}
 % Different users might wish to define links for a variety of styles.
 % For example, a user might wish to have either full text or abbreviated text being linked.
-% To provide this flexibility, there is the \verb|\providebiblegatewaystyle|\-\marg{stylename}\-\marg{urlstylename}\marg{textstylename} command.
+% To provide this flexibility, there is the \verb|\definebiblegatewaystyle|\-\marg{stylename}\-\marg{urlstylename}\marg{textstylename} command.
 % The user first gives the name for this new style, and then gives the name of the existing style that will be used to format the link, and then finally the name of the existing style that will be used to format the linked text.
 %    \begin{macrocode}
-\newcommand*{\providebiblegatewaystyle}[3]{%
-    \providebiblestyle{#1}{%
+\newcommand*{\definebiblegatewaystyle}[3]{%
+    \definebiblestyle{#1}{%
         \href{%
             \brm@delegatestyle{#2}{##1}{##2}{##3}%
         }{%
@@ -2213,7 +2213,7 @@
 % A style is defined that uses a link style for the Bible Gatway NIV version and full names for the linked text.
 % Users may define other styles for different link formats or different linked text formats.
 %    \begin{macrocode}
-\providebiblegatewaystyle{biblegateway.com}%
+\definebiblegatewaystyle{biblegateway.com}%
     {biblegateway.com-url}{fullname}
 %    \end{macrocode}
 % \Finale
