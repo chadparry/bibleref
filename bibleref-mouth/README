@@ -8,6 +8,7 @@ context, such as an argument to the \url command. To write a reference, the
 document should use the command \bibleref{reference}.
 
 This package depends on the following packages.
+ * etoolbox
  * fmtcount
  * hyperref
 
