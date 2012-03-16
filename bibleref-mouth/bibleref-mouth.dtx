@@ -19,6 +19,8 @@
 %<code>\ProvidesPackage{bibleref-mouth}[2012/02/26 v1.0 Expandable Bible reference style]
 %<code>
 %<code>\RequirePackage{fmtcount}
+%<code>\RequirePackage{bibleref}
+%<code>\providecommand{\BRbksep}{;\space}
 %<code>\RequirePackage{etoolbox}[2007/10/08]
 %<code>\AtEndPreamble{\RequirePackage{hyperref}[2008/12/26]}
 %<code>
@@ -257,9 +259,10 @@
 %    \end{macrocode}
 % \end{macro}
 % 
-% The default style for documents that don't override it is the one that outputs the full name of the books.
+% The default style for documents that don't override it is the one that uses
+% the currently active \textsf{bibleref} style.
 %    \begin{macrocode}
-\setbiblestyle{fullname}
+\setbiblestyle{bibleref}
 %    \end{macrocode}
 % 
 % \begin{macro}{\bibleref}
@@ -1623,6 +1626,90 @@
 % Users can define more names or abbreviations if they wish.
 % Examples of how to extend the collection of supported books are shown in the \textsf{bibleref-lds} package.
 % 
+% \begin{macro}{\brm@foreachbook@bibleref}
+% This uses the currently active book names provided by the \textsf{bibleref} package.
+% This command has the signature \verb|\brm@foreachbook@bibleref|\-\marg{callback}.
+% The callback argument is expected to have the signature \callback\-\marg{book}\marg{bookname}.
+% The callback can do whatever it wants with the names, such as creating a permanant book alias.
+%    \begin{macrocode}
+\newcommand*{\brm@foreachbook@bibleref}[1]{%
+    #1{Genesis}{\br@Genesis}%
+    #1{Exodus}{\br@Exodus}%
+    #1{Leviticus}{\br@Leviticus}%
+    #1{Numbers}{\br@Numbers}%
+    #1{Deuteronomy}{\br@Deuteronomy}%
+    #1{Joshua}{\br@Joshua}%
+    #1{Judges}{\br@Judges}%
+    #1{Ruth}{\br@Ruth}%
+    #1{ISamuel}{\br@ISamuel}%
+    #1{IISamuel}{\br@IISamuel}%
+    #1{IKings}{\br@IKings}%
+    #1{IIKings}{\br@IIKings}%
+    #1{IChronicles}{\br@IChronicles}%
+    #1{IIChronicles}{\br@IIChronicles}%
+    #1{Ezra}{\br@Ezra}%
+    #1{Nehemiah}{\br@Nehemiah}%
+    #1{Tobit}{\br@Tobit}%
+    #1{Judith}{\br@Judith}%
+    #1{Esther}{\br@Esther}%
+    #1{IMaccabees}{\br@IMaccabees}%
+    #1{IIMaccabees}{\br@IIMaccabees}%
+    #1{Job}{\br@Job}%
+    #1{Psalms}{\br@Psalms}%
+    #1{Proverbs}{\br@Proverbs}%
+    #1{Ecclesiastes}{\br@Ecclesiastes}%
+    #1{SongofSongs}{\br@SongofSongs}%
+    #1{Wisdom}{\br@Wisdom}%
+    #1{Ecclesiasticus}{\br@Ecclesiasticus}%
+    #1{Isaiah}{\br@Isaiah}%
+    #1{Jeremiah}{\br@Jeremiah}%
+    #1{Lamentations}{\br@Lamentations}%
+    #1{Baruch}{\br@Baruch}%
+    #1{Ezekiel}{\br@Ezekiel}%
+    #1{Daniel}{\br@Daniel}%
+    #1{Hosea}{\br@Hosea}%
+    #1{Joel}{\br@Joel}%
+    #1{Amos}{\br@Amos}%
+    #1{Obadiah}{\br@Obadiah}%
+    #1{Jonah}{\br@Jonah}%
+    #1{Micah}{\br@Micah}%
+    #1{Nahum}{\br@Nahum}%
+    #1{Habakkuk}{\br@Habakkuk}%
+    #1{Zephaniah}{\br@Zephaniah}%
+    #1{Haggai}{\br@Haggai}%
+    #1{Zechariah}{\br@Zechariah}%
+    #1{Malachi}{\br@Malachi}%
+    #1{Matthew}{\br@Matthew}%
+    #1{Mark}{\br@Mark}%
+    #1{Luke}{\br@Luke}%
+    #1{John}{\br@John}%
+    #1{Acts}{\br@Acts}%
+    #1{Romans}{\br@Romans}%
+    #1{ICorinthians}{\br@ICorinthians}%
+    #1{IICorinthians}{\br@IICorinthians}%
+    #1{Galatians}{\br@Galatians}%
+    #1{Ephesians}{\br@Ephesians}%
+    #1{Philippians}{\br@Philippians}%
+    #1{Colossians}{\br@Colossians}%
+    #1{IThessalonians}{\br@IThessalonians}%
+    #1{IIThessalonians}{\br@IIThessalonians}%
+    #1{ITimothy}{\br@ITimothy}%
+    #1{IITimothy}{\br@IITimothy}%
+    #1{Titus}{\br@Titus}%
+    #1{Philemon}{\br@Philemon}%
+    #1{Hebrews}{\br@Hebrews}%
+    #1{James}{\br@James}%
+    #1{IPeter}{\br@IPeter}%
+    #1{IIPeter}{\br@IIPeter}%
+    #1{IJohn}{\br@IJohn}%
+    #1{IIJohn}{\br@IIJohn}%
+    #1{IIIJohn}{\br@IIIJohn}%
+    #1{Jude}{\br@Jude}%
+    #1{Revelation}{\br@Revelation}%
+}
+%    \end{macrocode}
+% \end{macro}
+% 
 % \begin{macro}{\brm@foreachbook@full}
 % There are several different use cases for full book names.
 % There are also several varieties of each full name.
@@ -1986,6 +2073,7 @@
 % These commands define the callback as \verb|\definebiblebook{|\meta{stylename}\verb|}|, which creates a version of each book name in the given style.
 % 
 %    \begin{macrocode}
+\brm@foreachbook@bibleref{\definebiblebook{bibleref}}
 \brm@foreachbook@full{\definebiblebook{fullname}}{\ }{}{}{}{}{}%
     {\brm@number@arabicspace}{\brm@number@arabicspace}
 \brm@foreachbook@abbrv{\definebiblebook{jerusalem}}{}%
@@ -2017,6 +2105,10 @@
 % Examples of how to define custom styles are found in the \textsf{bibleref-lds} package.
 % 
 %    \begin{macrocode}
+\definebiblestyle{bibleref}{\standardbiblestyle{bibleref}%
+    {\BRbkchsep}{\BRchvsep}{\BRbksep}{\BRchsep}{\BRvsep}{\BRvrsep}%
+    {\BRchapterstyle}{\BRversestyle}%
+    {#1}{#2}{#3}}
 \definebiblestyle{fullname}{\standardbiblestyle{fullname}%
     {\ }{:}{; }{;}{,}{--}%
     {\brm@number@arabic}{\brm@number@arabic}%
