@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 % 
-% Copyright 2012 Chad Parry
+% Copyright 2012 Chad Parry, Sebastian Kuhnert
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -18,22 +18,26 @@
 %<code>\NeedsTeXFormat{LaTeX2e}
 %<code>\ProvidesPackage{bibleref-mouth}[2012/02/26 v1.0 Expandable Bible reference style]
 %<code>
-%<code>\RequirePackage{fmtcount}
-%<code>\RequirePackage{bibleref}
-%<code>\providecommand{\BRbksep}{;\space}
-%<code>\RequirePackage{etoolbox}[2007/10/08]
-%<code>\AtEndPreamble{\RequirePackage{hyperref}[2008/12/26]}
-%<code>
 % 
 %<*driver>
 \documentclass{ltxdoc}
 \usepackage{bibleref-mouth}
 \usepackage{afterpage}
 \usepackage{longtable}
+\usepackage{booktabs}
 \usepackage{MnSymbol}
 \usepackage[protrusion]{microtype}
 \usepackage{bigfoot}
-\usepackage{hyperref}[2008/12/26]
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\usepackage[french,ngerman,american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgffor}
+\usepackage[pdftitle={The bibleref-mouth package},
+            pdfauthor={Chad Perry and Sebastian Kuhnert},
+            unicode=true,
+            ]{hyperref}[2008/12/26]
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -45,7 +49,7 @@
 %</driver>
 % \fi
 % 
-% \CheckSum{1037}
+% \CheckSum{1662}
 % 
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -67,11 +71,15 @@
 % 
 % \GetFileInfo{bibleref-mouth.sty}
 % 
-% \title{
-%     The \textsf{bibleref-mouth} package%
-%     \thanks{This document corresponds to \textsf{bibleref-mouth}~\fileversion, dated~\filedate.}
+% \title{^^A
+%   The \textsf{bibleref-mouth} package^^A
+%   \thanks{This document corresponds to \textsf{bibleref-mouth}~\fileversion, dated~\filedate.}
 % }
-% \author{Chad Parry \\ \href{mailto:spam@chad.parry.org}{\nolinkurl{spam@chad.parry.org}}}
+% \author{^^A
+%   Chad Parry \\ \href{mailto:spam@chad.parry.org}{\nolinkurl{spam@chad.parry.org}} \and
+%   Sebastian Kuhnert \\
+%   \href{mailto:mail@sebastian-kuhnert.de}{\nolinkurl{mail@sebastian-kuhnert.de}}
+% }
 % 
 % \maketitle
 % 
@@ -89,11 +97,11 @@
 % 
 % \let\origverbatim\verbatim
 % \let\origendverbatim\endverbatim
-% \renewenvironment{verbatim}{%
-%     \origverbatim%
-%     \microtypesetup{protrusion=false}%
-% }{%
-%     \origendverbatim%
+% \renewenvironment{verbatim}{^^A
+%     \origverbatim
+%     \microtypesetup{protrusion=false}^^A
+% }{^^A
+%     \origendverbatim
 % }
 % \newcommand*{\callback}{\meta{\textbackslash{}callback}}
 % \newcommand*{\cursor}{$\downfootline$}
@@ -115,7 +123,7 @@
 % The last situation may sound contrived, but it is reasonable that an informal document might wish to link to an online Bible, such as at \href{http://www.biblegateway.com/}{Bible Gateway}.
 % This package supports such a linked reference.
 % For example, a hypertext reference like the following can be produced by the command below:
-% \setbiblestyle{biblegateway.com}%
+% \setbiblestyle{biblegateway.com}^^A
 % \bibleref{Gen 1:27}.
 % 
 % \begin{verbatim}
@@ -241,7 +249,65 @@
 % That means that assignments, (e.g.\ \cs{def}), cannot be used.
 % Instead, recursion and currying and the command pattern are relied on extensively.
 % In order to read this code, it doesn't hurt to be familiar with a language like \href{http://www.haskell.org/haskellwiki/Haskell}{Haskell}.
-% 
+%
+% \subsection{Dependencies and Compatibility}
+%
+% The package \textsf{fmtcount} is used to spell out book, chapter and verse
+% numbers in the \textsf{text} style.
+%    \begin{macrocode}
+\RequirePackage{fmtcount}
+%    \end{macrocode}
+% The packages \textsf{etoolbox} and \textsf{scrlfile} are required for
+% \verb|\AtEndPreamble| and \verb|\AfterPackage|, respectively.
+%    \begin{macrocode}
+\RequirePackage{etoolbox}[2007/10/08]
+\RequirePackage{scrlfile}
+%    \end{macrocode}
+% The package \textsf{hyperref} is required for the links to Bible Gateway. As
+% it is recommended to load \textsf{hyperref} at the end of the preamble, this
+% is delayed until after the user-specified part of the preamble is over.
+%    \begin{macrocode}
+\AtEndPreamble{\RequirePackage{hyperref}[2008/12/26]}
+%    \end{macrocode}
+% The default style for passage formatting uses the facilities of the
+% \textsf{bibleref} package. This also provides some enhancements that might be
+% merged into \textsf{bibleref} later.
+%    \begin{macrocode}
+\RequirePackage{bibleref}
+\providecommand{\BRbksep}{;\space}
+\providecommand{\BRadditionsto}{Additions to }
+\providecommand{\br@AddDaniel}{\BRadditionsto Daniel}
+\providecommand{\br@AddEsther}{\BRadditionsto Esther}
+\providecommand{\br@EpJeremiah}{Epistle of Jeremiah}
+\preto\brfullname{%
+  \def\BRadditionsto{Additions to }%
+  \def\br@AddDaniel{\BRadditionsto Daniel}%
+  \def\br@AddEsther{\BRadditionsto Esther}%
+  \def\br@EpJeremiah{Epistle of Jeremiah}}
+\preto\brabbrvname{%
+  \def\BRadditionsto{Add\BRperiod~}%
+  \def\br@AddDaniel{\BRadditionsto Dn\BRperiod}%
+  \def\br@AddEsther{\BRadditionsto Est\BRperiod}%
+  \def\br@EpJeremiah{Ep\BRperiod Jer\BRperiod}}
+\preto\brabbrvname{%
+  \def\BRadditionsto{Add\BRperiod~}%
+  \def\br@AddDaniel{\BRadditionsto Dan\BRperiod}%
+  \def\br@AddEsther{\BRadditionsto Esther\BRperiod}%
+  \def\br@EpJeremiah{Ep\BRperiod Jer\BRperiod}}
+\AfterPackage*{bibleref-german}{%
+  \preto\brg@fullname{%
+    \def\BRadditionsto{St\"ucke zu }%
+    \def\br@AddDaniel{\BRadditionsto Daniel}%
+    \def\br@AddEsther{\BRadditionsto Esther}%
+    \def\br@EpJeremiah{\BRder Brief des Jeremia}}%
+  \preto\brg@abbrvname{%
+    \def\BRadditionsto{St\BRperiod{} }%
+    \def\br@AddDaniel{\BRadditionsto Dan\BRperiod}%
+    \def\br@AddEsther{\BRadditionsto Est\BRperiod}%
+    \def\br@EpJeremiah{Br\BRperiod Jer\BRperiod}}%
+}
+%    \end{macrocode}
+%
 % \subsection{Entry Points}
 % 
 % \begin{macro}{\setbiblestyle}
@@ -272,7 +338,7 @@
 % This command just retrieves the current style and delegates to \cs{brm@bibleref}.
 %    \begin{macrocode}
 \newcommand*{\bibleref}[1]{%
-    \brm@bibleref{\brm@currentstyle}{#1}%
+  \expandafter\brm@bibleref\expandafter{\expandafter\brm@currentstyle\expandafter}\expandafter{\romannumeral-`0\brm@expandcs{#1}}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -898,6 +964,13 @@
             {\brm@tailstr{#1}}%
             {#3}%
             {%
+              \brm@ifnameexists{\brm@bookprefix{#2\brm@headstr{#1}}}{%
+                \expandafter\brm@parsebook@success\expandafter
+                {\romannumeral-`0\brm@parsebook@gobblesuffix{#1}}%
+                {\csname\brm@bookprefix%
+                  {#2\brm@headstr{#1}}\endcsname}%
+                {#3}%
+              }{%
                 \brm@ifnameexists{\brm@bookalias{#2\brm@headstr{#1}}}{%
                     \expandafter\brm@parsebook@success\expandafter%
                         {\romannumeral-`0\brm@tailstr{#1}}%
@@ -905,8 +978,9 @@
                             {#2\brm@headstr{#1}}\endcsname}%
                         {#3}%
                 }{%
-                    #4%
+                   #4%
                 }%
+              }%  
             }%
     }%
 }
@@ -927,7 +1001,7 @@
 % \end{macro}
 % 
 % \begin{macro}{\brm@parsebook@success}
-% When a successful match with a book name has been made, the success handler is called.
+% When a successful match with a book alias has been made, the success handler is called.
 % The remaining text needs to be expanded fully and then passed to the handler as the second argument.
 % But it is difficult to fully expand any argument other than the first.
 % As a workaround, the remaining text is fully expanded in \cs{brm@parsebook@accumulate}, which passes it to this helper as the first argument.
@@ -935,6 +1009,40 @@
 %    \begin{macrocode}
 \newcommand*{\brm@parsebook@success}[3]{%
     #3{#2}{#1}%
+}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\brm@parsebook@gobblesuffix}
+% When a successful match with a book prefix has been made, the remaining parts
+% of the book name need to be gobbled before the success handler is called.
+%    \begin{macrocode}
+\newcommand*{\brm@parsebook@gobblesuffix}[1]{%
+  \brm@ifempty{#1}{}{%
+    \expandafter\expandafter\expandafter\brm@parsebook@gobblesuffix@helper\brm@tailstr{#1}\@empty%
+  }%
+}
+\newcommand*{\brm@parsebook@gobblesuffix@helper}[1]{%
+  \ifx #1\@empty
+    \expandafter\@gobble
+  \else
+    \expandafter\@firstofone
+  \fi
+  {%
+    \brm@ifdigit{#1}{%
+      #1%
+    }{%
+      \brm@ifsamechar{-}{#1}{%
+        #1%
+      }{%
+        \brm@ifsamechar{;}{#1}{%
+          #1%
+        }{%
+          \brm@parsebook@gobblesuffix@helper
+        }%
+      }%
+    }%
+  }%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1212,6 +1320,101 @@
 }
 %    \end{macrocode}
 % \end{macro}
+%
+% \subsection{Selective Expansion}
+%
+% The commands in this section allow selective expansion of arguments.
+%
+% \begin{macro}{\brm@expandcs}
+%   The \verb|\brm@expandcs|\marg{tokens} command recursively expands control
+%   sequences in its argument, but leaves active characters and (some) accents
+%   unexpanded. To implement this in an expandable way, the result is passed
+%   through \cs{detokenize}, yielding characters of catcode ``other''. In the
+%   current implementation, spaces in the input are skipped and new spaces are
+%   inserted after each non-expandable control sequence.
+%    \begin{macrocode}
+ % See http://tex.stackexchange.com/a/47445
+\long\def\fullyexpand#1{%
+  \romannumeral-`0%
+    \fullyexpandauxi{#1}{}%
+}
+\long\def\fullyexpandauxi#1{%
+  % The space in the following line is deliberate: it will always finish the
+  % \romannumeral before \fullyexpandauxii expands
+  \expandafter\fullyexpandauxii\romannumeral-`0#1 \fullyexpandend
+}
+\long\def\fullyexpandauxii#1{%
+  \ifx\fullyexpandend#1%
+    \expandafter\fullyexpandend
+  \else
+    \expandafter\fullyexpandauxiii
+  \fi
+    {#1}%
+}
+\long\def\fullyexpandauxiii#1#2\fullyexpandend#3{%
+  \expandafter\fullyexpandauxii\romannumeral-`0#2 \fullyexpandend{#3#1}%
+}
+\long\def\fullyexpandend#1#2{ #2}
+\newcommand*{\brm@expandcs}[1]{%
+  \fullyexpand{\brm@@expandcs\brm@marker #1\brm@endlist}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\brm@@expandcs}
+%   This is a helper for \cs{brm@expandcs} that considers the tokens one by one,
+%   expanding them if appropriate.
+%    \begin{macrocode}
+\newcommand*{\brm@@expandcs}[2]{%
+  \ifx #2\brm@endlist
+    \expandafter\@gobble
+  \else
+    \expandafter\@firstofone
+  \fi
+  {%
+    \ifx #1#2% if next CS is nonexpandable
+      \expandafter\@firstoftwo
+    \else
+      \expandafter\@secondoftwo
+    \fi
+    {\detokenize{#2}\brm@@expandcs\brm@marker}%
+    {%
+      \ifcat\noexpand#2\relax% if next token is a control sequence
+        \expandafter\@firstoftwo
+      \else
+        \expandafter\@secondoftwo
+      \fi
+      {%
+        \ifx#2\"% if umlaut accent
+          \expandafter\@firstoftwo
+        \else
+          \expandafter\@secondoftwo
+        \fi
+        {\detokenize{#2}\brm@@expandcs\brm@marker}%
+        {%
+          \ifx#2\'% if accent
+            \expandafter\@firstoftwo
+          \else
+            \expandafter\@secondoftwo
+          \fi
+          {\detokenize{#2}\brm@@expandcs\brm@marker}%
+          {\expandafter\brm@@expandcs\expandafter#2#2}%
+        }%
+      }%
+      {%
+        \ifcat\noexpand#2a% letter
+          \expandafter\@firstoftwo
+        \else
+          \expandafter\@secondoftwo
+        \fi
+        {#2\brm@@expandcs\brm@marker}%
+        {\detokenize{#2}\brm@@expandcs\brm@marker}%
+      }%
+    }%
+  }%
+}%
+%    \end{macrocode}
+% \end{macro}
 % 
 % \subsection{String Manipulations}
 % 
@@ -1314,9 +1517,18 @@
 % \end{macro}
 % 
 % \begin{macro}{\brm@bookalias}
-% The \verb|\brm@bookalias|\marg{book} command returns the name of the command that outputs the actual book name for the book alias.
+% The \verb|\brm@bookalias|\marg{book} command returns the name of the command
+% that outputs the actual book name for the book alias.
 %    \begin{macrocode}
 \newcommand*{\brm@bookalias}[1]{brm@bookalias@#1}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\brm@bookprefix}
+% The \verb|\brm@bookprefix|\marg{book} command returns the name of the command
+% that outputs the actual book name for the book prefix.
+%    \begin{macrocode}
+\newcommand*{\brm@bookprefix}[1]{brm@bookprefix@#1}
 %    \end{macrocode}
 % \end{macro}
 % 
@@ -1363,27 +1575,53 @@
 % \end{macro}
 % 
 % \begin{macro}{\definebiblebookalias}
-% A new Bible book alias can be created with \verb|\definebiblebookalias|\marg{book}\marg{alias}.
-% An alias is the name that is specified to the \cs{bibleref} command.
-% Every book needs to have aliases defined for users to refer to it.
-% A book can have as many different aliases as the user wishes to defined.
-% This command expands the alias name and delegates to \cs{brm@definebiblebookalias}.
+% A new Bible book alias can be created with
+% \verb|\definebiblebookalias|\oarg{number}\marg{alias}\marg{book}. When the
+% optional \verb|number| is given, aliases for both Arabic and uppercase Roman
+% numbers and both with and without dot after the number are defined. Also, an
+% optional dot at the end is added.
+% An alias is the name that is specified to the \cs{bibleref} command. An
+% alternative is to specify (alias) prefixes using \cs{definebiblebookprefix}
+% below. Every book needs to have aliases or prefixes defined for users to refer to it.
+% A book can have as many different aliases and prefixes as the user wishes to be defined.
 % 
-% Because the parser ignores spaces, an alias name also cannot contain spaces. If an alias is
-% created that contains spaces anyway, then it will be impossible for users to reference it.
+% The alias is expanded using \cs{brm@expandcs}.
 %    \begin{macrocode}
-\newcommand*{\definebiblebookalias}[2]{%
-    \expandafter\brm@definebiblebookalias\expandafter%
-        {\romannumeral-`0#2}{#1}%
+\newcommand*{\definebiblebookalias}[3][]{%
+  \brm@ifempty{#1}{%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#2}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#2}.}}{#3}%
+  }{%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#1#2}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#1.#2}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{\@Roman{#1}#2}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{\@Roman{#1}.#2}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#1#2.}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{#1.#2.}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{\@Roman{#1}#2.}}}{#3}%
+    \csdef{\expandafter\brm@bookalias\expandafter{\brm@expandcs{\@Roman{#1}.#2.}}}{#3}%
+  }%
 }
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\brm@definebiblebookalias}
-% A new Bible book alias is created by \verb|\brm@definebiblebookalias|\marg{alias}\marg{book}.
+% \begin{macro}{\definebiblebookprefix}
+%   A new Bible book prefix can be created with
+%   \verb|\definebiblebookprefix|\oarg{number}\marg{prefix}\marg{book}. A prefix works
+%   similarly to an alias: A prefix followed by arbitrary non-digit non-separator
+%   characters can be used to specify a book name to the \cs{bibleref} command.
+%
+%   The prefix is expanded using \cs{brm@expandcs}.
 %    \begin{macrocode}
-\newcommand*{\brm@definebiblebookalias}[2]{%
-    \expandafter\def\csname\brm@bookalias{#1}\endcsname{#2}%
+\newcommand*{\definebiblebookprefix}[3][]{%
+  \brm@ifempty{#1}{%
+    \csdef{\expandafter\brm@bookprefix\expandafter{\brm@expandcs{#2}}}{#3}%
+  }{%
+    \csdef{\expandafter\brm@bookprefix\expandafter{\brm@expandcs{#1#2}}}{#3}%
+    \csdef{\expandafter\brm@bookprefix\expandafter{\brm@expandcs{#1.#2}}}{#3}%
+    \csdef{\expandafter\brm@bookprefix\expandafter{\brm@expandcs{\@Roman{#1}#2}}}{#3}%
+    \csdef{\expandafter\brm@bookprefix\expandafter{\brm@expandcs{\@Roman{#1}.#2}}}{#3}%
+  }%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1652,6 +1890,7 @@
     #1{Tobit}{\br@Tobit}%
     #1{Judith}{\br@Judith}%
     #1{Esther}{\br@Esther}%
+    #1{AddEsther}{\br@AddEsther}%
     #1{IMaccabees}{\br@IMaccabees}%
     #1{IIMaccabees}{\br@IIMaccabees}%
     #1{Job}{\br@Job}%
@@ -1664,9 +1903,11 @@
     #1{Isaiah}{\br@Isaiah}%
     #1{Jeremiah}{\br@Jeremiah}%
     #1{Lamentations}{\br@Lamentations}%
+    #1{EpJeremiah}{\br@EpJeremiah}%
     #1{Baruch}{\br@Baruch}%
     #1{Ezekiel}{\br@Ezekiel}%
     #1{Daniel}{\br@Daniel}%
+    #1{AddDaniel}{\br@AddDaniel}%
     #1{Hosea}{\br@Hosea}%
     #1{Joel}{\br@Joel}%
     #1{Amos}{\br@Amos}%
@@ -1740,6 +1981,7 @@
     #1{Tobit}{#3Tobit}%
     #1{Judith}{#3Judith}%
     #1{Esther}{#3Esther}%
+    #1{AddEsther}{Additions to Esther}%
     #1{IMaccabees}{#8{1}#3Maccabees}%
     #1{IIMaccabees}{#8{2}#3Maccabees}%
     #1{Job}{#3Job}%
@@ -1752,9 +1994,11 @@
     #1{Isaiah}{#3Isaiah}%
     #1{Jeremiah}{#3Jeremiah}%
     #1{Lamentations}{#3Lamentations}%
+    #1{EpJeremiah}{Epistle of Jeremiah}%
     #1{Baruch}{#3Baruch}%
     #1{Ezekiel}{#3Ezekiel}%
     #1{Daniel}{#3Daniel}%
+    #1{AddDaniel}{Additions to Daniel}%
     #1{Hosea}{#3Hosea}%
     #1{Joel}{#3Joel}%
     #1{Amos}{#3Amos}%
@@ -1823,6 +2067,7 @@
     #1{Tobit}{Tb#2}%
     #1{Judith}{Jdt#2}%
     #1{Esther}{Est#2}%
+    #1{AddEsther}{Add#2~Est#2}%
     #1{IMaccabees}{#3{1}M#2}%
     #1{IIMaccabees}{#3{2}M#2}%
     #1{Job}{Jb#2}%
@@ -1835,9 +2080,11 @@
     #1{Isaiah}{Is#2}%
     #1{Jeremiah}{Jr#2}%
     #1{Lamentations}{Lm#2}%
+    #1{EpJeremiah}{Ep#2~Jr#2}%
     #1{Baruch}{Ba#2}%
     #1{Ezekiel}{Ezk#2}%
     #1{Daniel}{Dn#2}%
+    #1{AddDaniel}{Add#2~Dn#2}%
     #1{Hosea}{Ho#2}%
     #1{Joel}{Jl#2}%
     #1{Amos}{Am#2}%
@@ -1906,6 +2153,7 @@
     #1{Tobit}{Tobit}%
     #1{Judith}{Judith}%
     #1{Esther}{Esther}%
+    #1{AddEsther}{Add#2~Esther}%
     #1{IMaccabees}{#4{1}M#2}%
     #1{IIMaccabees}{#4{2}M#2}%
     #1{Job}{Job}%
@@ -1918,9 +2166,11 @@
     #1{Isaiah}{Isa#2}%
     #1{Jeremiah}{Jer#2}%
     #1{Lamentations}{Lam#2}%
+    #1{EpJeremiah}{Ep#2~Jer#2}%
     #1{Baruch}{Baruch}%
     #1{Ezekiel}{Ezek#2}%
     #1{Daniel}{Dan#2}%
+    #1{AddDaniel}{Add#2~Dan#2}%
     #1{Hosea}{Hos#2}%
     #1{Joel}{Joel}%
     #1{Amos}{Amos}%
@@ -2039,32 +2289,307 @@
 % 
 % \subsubsection{Book Aliases}
 % 
-% Various book aliases are defined for all the book names, including versions of the full names, the abbreviated names, and the alternative abbreviated names.
-% The book numbers can be done with either Arabic or Roman numerals.
-% The abbreviations are supported both with and without periods.
-% In order to support all such combinations, there are \oldstylenums{10} different definitions.
-% (If there were more than \oldstylenums{24} combinations, then it would start to be necessary to programmatically keep track of them, but this small number can still be maintained manually).
+% Various book aliases are defined for all the book names, to allow full and
+% abbreviated names in English, French and German.
 %    \begin{macrocode}
-\brm@foreachbook@full{\definebiblebookalias}{}{}{}{}{}{}%
-    {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@full{\definebiblebookalias}{}{}{}{}{}{}%
-    {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@abbrv{\definebiblebookalias}{}%
-    {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@abbrv{\definebiblebookalias}{}%
-    {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@abbrv{\definebiblebookalias}{.}%
-    {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@abbrv{\definebiblebookalias}{.}%
-    {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\definebiblebookalias}{}{}%
-    {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\definebiblebookalias}{}{}%
-    {\brm@number@upperromanascii}{\brm@number@upperromanascii}
-\brm@foreachbook@altabbrv{\definebiblebookalias}{.}{}%
-    {\brm@number@arabic}{\brm@number@arabic}
-\brm@foreachbook@altabbrv{\definebiblebookalias}{.}{}%
-    {\brm@number@upperromanascii}{\brm@number@upperromanascii}
+\definebiblebookprefix{Ge}{Genesis}
+\definebiblebookprefix{Gn}{Genesis}
+\definebiblebookprefix[1]{Mo}{Genesis}
+\definebiblebookalias[1]{M}{Genesis}
+\definebiblebookprefix{Ex}{Exodus}
+\definebiblebookprefix[2]{Mo}{Exodus}
+\definebiblebookalias[2]{M}{Exodus}
+\definebiblebookprefix{Le}{Leviticus}
+\definebiblebookprefix{Lv}{Leviticus}
+\definebiblebookprefix{L\'e}{Leviticus}
+\definebiblebookprefix{L^^c3^^a9}{Leviticus}% utf8 \'e
+\definebiblebookprefix{L^^e9}{Leviticus}% latin1 \'e
+\definebiblebookprefix[3]{M}{Leviticus}
+\definebiblebookprefix{Nu}{Numbers}
+\definebiblebookprefix{Nb}{Numbers}
+\definebiblebookprefix{No}{Numbers}
+\definebiblebookprefix{4}{Numbers}
+\definebiblebookprefix{IV}{Numbers}
+\definebiblebookprefix{De}{Deuteronomy}
+\definebiblebookprefix{Dt}{Deuteronomy}
+\definebiblebookprefix{5}{Deuteronomy}
+\definebiblebookprefix{V}{Deuteronomy}
+\definebiblebookprefix{Jos}{Joshua}
+\definebiblebookprefix{Judg}{Judges}
+\definebiblebookalias{Jd}{Judges}
+\definebiblebookprefix{Jdg}{Judges}
+\definebiblebookprefix{Jg}{Judges}
+\definebiblebookprefix{Jug}{Judges}
+\definebiblebookprefix{Ri}{Judges}
+\definebiblebookprefix{Ru}{Ruth}
+\definebiblebookprefix{Rt}{Ruth}
+\definebiblebookprefix[1]{S}{ISamuel}
+\definebiblebookprefix[2]{S}{IISamuel}
+\definebiblebookprefix[1]{Ki}{IKings}
+\definebiblebookprefix[1]{Kg}{IKings}
+\definebiblebookprefix[1]{K\"o}{IKings}
+\definebiblebookprefix[1]{K"o}{IKings}
+\definebiblebookprefix[1]{Koe}{IKings}
+\definebiblebookprefix[1]{K^^c3^^b6}{IKings}% utf8 \"o
+\definebiblebookprefix[1]{K^^f6}{IKings}% latin1 \"o
+\definebiblebookprefix[1]{R}{IKings}
+\definebiblebookalias[1]{K}{IKings}
+\definebiblebookprefix[2]{Ki}{IIKings}
+\definebiblebookprefix[2]{Kg}{IIKings}
+\definebiblebookprefix[2]{K\"o}{IIKings}
+\definebiblebookprefix[2]{K"o}{IIKings}
+\definebiblebookprefix[2]{Koe}{IIKings}
+\definebiblebookprefix[2]{K^^c3^^b6}{IIKings}% utf8 \"o
+\definebiblebookprefix[2]{K^^f6}{IIKings}% latin1 \"o
+\definebiblebookprefix[2]{R}{IIKings}
+\definebiblebookalias[2]{K}{IIKings}
+\definebiblebookprefix[1]{Ch}{IChronicles}
+\definebiblebookprefix[2]{Ch}{IIChronicles}
+\definebiblebookprefix{Ezr}{Ezra}
+\definebiblebookprefix{Esr}{Ezra}
+\definebiblebookprefix{Esd}{Ezra}
+\definebiblebookprefix{Ne}{Nehemiah}
+\definebiblebookprefix{N\'e}{Nehemiah}
+\definebiblebookprefix{N^^c3^^a9}{Nehemiah}% utf8 \'e
+\definebiblebookprefix{N^^e9}{Nehemiah}% latin1 \'e
+\definebiblebookprefix{Est}{Esther}
+\definebiblebookprefix{Job}{Job}
+\definebiblebookalias{Jo}{Job}
+\definebiblebookprefix{Jb}{Job}
+\definebiblebookprefix{Hi}{Job}
+\definebiblebookprefix{Ij}{Job}
+\definebiblebookprefix{Ps}{Psalms}
+\definebiblebookprefix{Pro}{Proverbs}
+\definebiblebookprefix{Prv}{Proverbs}
+\definebiblebookprefix{Sp}{Proverbs}
+\definebiblebookalias{Pr}{Proverbs}
+\AfterPackage*{babel}{
+  \appto\extrasngerman{\definebiblebookalias{Pr}{Ecclesiastes}}
+  \appto\extrasgerman{\definebiblebookalias{Pr}{Ecclesiastes}}
+  \appto\extrasnaustrian{\definebiblebookalias{Pr}{Ecclesiastes}}
+  \appto\extrasaustrian{\definebiblebookalias{Pr}{Ecclesiastes}}
+  \appto\noextrasngerman{\definebiblebookalias{Pr}{Proverbs}}
+  \appto\noextrasgerman{\definebiblebookalias{Pr}{Proverbs}}
+  \appto\noextrasnaustrian{\definebiblebookalias{Pr}{Proverbs}}
+  \appto\noextrasaustrian{\definebiblebookalias{Pr}{Proverbs}}
+}
+\definebiblebookprefix{Ec}{Ecclesiastes}
+\definebiblebookprefix{Q}{Ecclesiastes}
+\definebiblebookprefix{Pre}{Ecclesiastes}
+\definebiblebookprefix{Koh}{Ecclesiastes}
+\definebiblebookprefix{So}{SongofSongs}
+\definebiblebookprefix{Sg}{SongofSongs}
+\definebiblebookprefix{Hoh}{SongofSongs}
+\definebiblebookprefix{Hl}{SongofSongs}
+\definebiblebookprefix{Hh}{SongofSongs}
+\definebiblebookprefix{Li}{SongofSongs}
+\definebiblebookprefix{Ct}{SongofSongs}
+\definebiblebookprefix{Ca}{SongofSongs}
+\definebiblebookprefix{Is}{Isaiah}
+\definebiblebookprefix{Jesa}{Isaiah}
+\definebiblebookalias{Jes}{Isaiah}
+\definebiblebookprefix{Es}{Isaiah}
+\definebiblebookprefix{Jer}{Jeremiah}
+\definebiblebookprefix{Jr}{Jeremiah}
+\definebiblebookprefix{J\'e}{Jeremiah}
+\definebiblebookprefix{J^^c3^^a9}{Jeremiah}% utf8 \'e
+\definebiblebookprefix{J^^e9}{Jeremiah}% latin1 \'e
+\definebiblebookprefix{La}{Lamentations}
+\definebiblebookprefix{Lm}{Lamentations}
+\definebiblebookprefix{Kl}{Lamentations}
+\definebiblebookalias{Ez}{Ezekiel}
+\definebiblebookprefix{Eze}{Ezekiel}
+\definebiblebookprefix{Ez\'e}{Ezekiel}
+\definebiblebookprefix{Ez^^c3^^a9}{Ezekiel}% utf8 \'e
+\definebiblebookprefix{Ez^^e9}{Ezekiel}% latin1 \'e
+\definebiblebookprefix{Ezk}{Ezekiel}
+\definebiblebookprefix{Hes}{Ezekiel}
+\definebiblebookprefix{Da}{Daniel}
+\definebiblebookprefix{Dn}{Daniel}
+\definebiblebookprefix{Hos}{Hosea}
+\definebiblebookalias{Ho}{Hosea}
+\definebiblebookprefix{Os}{Hosea}
+\definebiblebookprefix{Jl}{Joel}
+\definebiblebookprefix{Joe}{Joel}
+\definebiblebookprefix{Jo\"e}{Joel}
+\definebiblebookprefix{Jo"e}{Joel}
+\definebiblebookprefix{Jo^^c3^^ab}{Joel}% utf \"e
+\definebiblebookprefix{Jo^^eb}{Joel}% latin1 \"e
+\definebiblebookprefix{Am}{Amos}
+\definebiblebookprefix{Ob}{Obadiah}
+\definebiblebookprefix{Ab}{Obadiah}
+\definebiblebookprefix{Jon}{Jonah}
+\definebiblebookprefix{Jnh}{Jonah}
+\definebiblebookprefix{Jns}{Jonah}
+\definebiblebookprefix{Mi}{Micah}
+\definebiblebookprefix{Na}{Nahum}
+\definebiblebookprefix{Hab}{Habakkuk}
+\definebiblebookprefix{Hak}{Habakkuk}
+\definebiblebookprefix{Haq}{Habakkuk}
+\definebiblebookprefix{Hb}{Habakkuk}
+\definebiblebookprefix{Hk}{Habakkuk}
+\definebiblebookprefix{Zep}{Zephaniah}
+\definebiblebookprefix{Zp}{Zephaniah}
+\definebiblebookprefix{Zef}{Zephaniah}
+\definebiblebookprefix{Soph}{Zephaniah}
+\AfterPackage*{babel}{
+  \appto\extrasfrench{\definebiblebookprefix{So}{Zephaniah}}
+  \appto\noextrasfrench{\definebiblebookalias{So}{SongofSongs}}
+}
+\definebiblebookprefix{Hag}{Haggai}
+\definebiblebookprefix{Hg}{Haggai}
+\definebiblebookprefix{Ag}{Haggai}
+\definebiblebookprefix{Zec}{Zechariah}
+\definebiblebookprefix{Zc}{Zechariah}
+\definebiblebookprefix{Sa}{Zechariah}
+\definebiblebookprefix{Za}{Zechariah}
+\definebiblebookprefix{Mal}{Malachi}
+\definebiblebookprefix{Ml}{Malachi}
+% ^^A
+\definebiblebookprefix{Mat}{Matthew}
+\definebiblebookprefix{Mt}{Matthew}
+\definebiblebookprefix{Mar}{Mark}
+\definebiblebookprefix{Mk}{Mark}
+\definebiblebookprefix{Mc}{Mark}
+\definebiblebookprefix{Lu}{Luke}
+\definebiblebookprefix{Lk}{Luke}
+\definebiblebookprefix{Lc}{Luke}
+\definebiblebookprefix{Joh}{John}
+\definebiblebookprefix{Jn}{John}
+\definebiblebookprefix{Jh}{John}
+\definebiblebookprefix{Jea}{John}
+\definebiblebookprefix{Ac}{Acts}
+\definebiblebookprefix{Apos}{Acts}
+\definebiblebookprefix{Apg}{Acts}
+\definebiblebookalias{Apo}{Acts}
+\definebiblebookprefix{Ro}{Romans}
+\definebiblebookprefix{Rm}{Romans}
+\definebiblebookprefix{R\"o}{Romans}
+\definebiblebookprefix{R"o}{Romans}
+\definebiblebookprefix{Roe}{Romans}
+\definebiblebookprefix{R^^c3^^b6}{Romans}% utf8 \"o
+\definebiblebookprefix{R^^f6}{Romans}% latin1 \"o
+\definebiblebookprefix[1]{Co}{ICorinthians}
+\definebiblebookprefix[1]{Kor}{ICorinthians}
+\definebiblebookalias[1]{Ko}{ICorinthians}
+\definebiblebookprefix[2]{Co}{IICorinthians}
+\definebiblebookprefix[2]{Kor}{IICorinthians}
+\definebiblebookalias[2]{Ko}{IICorinthians}
+\definebiblebookprefix{Ga}{Galatians}
+\definebiblebookprefix{Eph}{Ephesians}
+\definebiblebookalias{Ep}{Ephesians}
+\definebiblebookprefix{\'Ep}{Ephesians}
+\definebiblebookprefix{^^c3^^89p}{Ephesians}% utf8 \'E
+\definebiblebookprefix{^^c9p}{Ephesians}% latin1 \'E
+\definebiblebookprefix{Phili}{Philippians}
+\definebiblebookalias{Ph}{Philippians}
+\definebiblebookalias{Phi}{Philippians}
+\definebiblebookalias{Phil}{Philippians}
+\definebiblebookprefix{Php}{Philippians}
+\definebiblebookprefix{C}{Colossians}
+\definebiblebookprefix{Kol}{Colossians}
+\definebiblebookprefix[1]{Th}{IThessalonians}
+\definebiblebookprefix[2]{Th}{IIThessalonians}
+\definebiblebookprefix[1]{Ti}{ITimothy}
+\definebiblebookprefix[1]{Tm}{ITimothy}
+\definebiblebookprefix[2]{Ti}{IITimothy}
+\definebiblebookprefix[2]{Tm}{IITimothy}
+\definebiblebookprefix{Ti}{Titus}
+\definebiblebookprefix{Tt}{Titus}
+\definebiblebookprefix{Phile}{Philemon}
+\definebiblebookprefix{Phil\'e}{Philemon}
+\definebiblebookprefix{Phil^^c3^^a9}{Philemon}% utf8 \'e
+\definebiblebookprefix{Phil^^e9}{Philemon}% latin1 \'e
+\definebiblebookprefix{Phl}{Philemon}
+\definebiblebookprefix{Phm}{Philemon}
+\definebiblebookprefix{Phim}{Philemon}
+\definebiblebookprefix{Heb}{Hebrews}
+\definebiblebookalias{He}{Hebrews}
+\definebiblebookprefix{H\'e}{Hebrews}
+\definebiblebookprefix{H^^c3^^a9}{Hebrews}% utf8 \'e
+\definebiblebookprefix{H^^e9}{Hebrews}% latin1 \'e
+\definebiblebookprefix{Ja}{James}
+\definebiblebookprefix{Js}{James}
+\definebiblebookprefix{Jm}{James}
+\definebiblebookprefix{Jk}{James}
+\definebiblebookprefix{Jc}{James}
+\definebiblebookprefix{Jq}{James}
+\definebiblebookprefix[1]{P}{IPeter}
+\definebiblebookprefix[2]{P}{IIPeter}
+\definebiblebookprefix[1]{J}{IJohn}
+\definebiblebookprefix[2]{J}{IIJohn}
+\definebiblebookprefix[3]{J}{IIIJohn}
+\definebiblebookprefix{Jude}{Jude}
+\definebiblebookprefix{Juda}{Jude}
+\definebiblebookalias{Jud}{Jude}
+\definebiblebookprefix{Rev}{Revelation}
+\definebiblebookprefix{Rv}{Revelation}
+\definebiblebookprefix{Of}{Revelation}
+\definebiblebookprefix{Apok}{Revelation}
+\definebiblebookprefix{Apk}{Revelation}
+\definebiblebookprefix{Apoc}{Revelation}
+\definebiblebookprefix{Apc}{Revelation}
+\definebiblebookprefix{Ap}{Revelation}
+\AfterPackage*{babel}{
+  \appto\extrasfrench{\definebiblebookalias{Apo}{Revelation}}
+  \appto\noextrasfrench{\definebiblebookalias{Apo}{Acts}}
+}
+% ^^A
+\definebiblebookprefix{Judi}{Judith}
+\definebiblebookprefix{Jdt}{Judith}
+\definebiblebookprefix{To}{Tobit}
+\definebiblebookprefix{Tb}{Tobit}
+\definebiblebookprefix[1]{Ma}{IMaccabees}
+\definebiblebookprefix[2]{Ma}{IIMaccabees}
+\definebiblebookprefix{W}{Wisdom}
+\definebiblebookprefix{Sag}{Wisdom}
+\AfterPackage*{babel}{
+  \appto\extrasfrench{\definebiblebookprefix{Sg}{Wisdom}}
+  \appto\noextrasfrench{\definebiblebookalias{Sg}{SongofSongs}}
+}
+\definebiblebookprefix{Si}{Ecclesiasticus}
+\definebiblebookprefix{Ecclesiasti}{Ecclesiasticus}
+\definebiblebookprefix{Ecclu}{Ecclesiasticus}
+\definebiblebookprefix{JesusS}{Ecclesiasticus}
+\definebiblebookprefix{Ba}{Baruch}
+\definebiblebookprefix{AddD}{AddDaniel}
+\definebiblebookprefix{AdditionsD}{AddDaniel}
+\definebiblebookprefix{AdditionstoD}{AddDaniel}
+\definebiblebookprefix{GreekD}{AddDaniel}
+\definebiblebookprefix{GrD}{AddDaniel}
+\definebiblebookprefix{St\"uckezuD}{AddDaniel}
+\definebiblebookprefix{St"uckezuD}{AddDaniel}
+\definebiblebookprefix{StueckezuD}{AddDaniel}
+\definebiblebookprefix{St^^c3^^bcckezuD}{AddDaniel}% utf8 \"u
+\definebiblebookprefix{St^^fcckezuD}{AddDaniel}% latin1 \"u
+\definebiblebookprefix{St\"uckeD}{AddDaniel}
+\definebiblebookprefix{St"uckeD}{AddDaniel}
+\definebiblebookprefix{StueckeD}{AddDaniel}
+\definebiblebookprefix{St^^c3^^bcckeD}{AddDaniel}% utf8 \"u
+\definebiblebookprefix{St^^fcckeD}{AddDaniel}% latin1 \"u
+\definebiblebookprefix{StD}{AddDaniel}
+\definebiblebookprefix{AddE}{AddEsther}
+\definebiblebookprefix{AdditionsE}{AddEsther}
+\definebiblebookprefix{AdditionstoE}{AddEsther}
+\definebiblebookprefix{GreekE}{AddEsther}
+\definebiblebookprefix{GrE}{AddEsther}
+\definebiblebookprefix{St\"uckezuE}{AddEsther}
+\definebiblebookprefix{St"uckezuE}{AddEsther}
+\definebiblebookprefix{StueckezuE}{AddEsther}
+\definebiblebookprefix{St^^c3^^bcckezuE}{AddEsther}% utf8 \"u
+\definebiblebookprefix{St^^fcckezuE}{AddEsther}% latin1 \"u
+\definebiblebookprefix{St\"uckeE}{AddEsther}
+\definebiblebookprefix{St"uckeE}{AddEsther}
+\definebiblebookprefix{StueckeE}{AddEsther}
+\definebiblebookprefix{St^^c3^^bcckeE}{AddEsther}% utf8 \"u
+\definebiblebookprefix{St^^fcckeE}{AddEsther}% latin1 \"u
+\definebiblebookprefix{StE}{AddEsther}
+\definebiblebookprefix{EpistleofJer}{EpJeremiah}
+\definebiblebookprefix{EpistleJer}{EpJeremiah}
+\definebiblebookprefix{EpJer}{EpJeremiah}
+\definebiblebookprefix{BriefdesJer}{EpJeremiah}
+\definebiblebookprefix{BriefJer}{EpJeremiah}
+\definebiblebookprefix{BrJer}{EpJeremiah}
 %    \end{macrocode}
 % 
 % \subsubsection{Formatted Book Names}
@@ -2308,5 +2833,306 @@
 \definebiblegatewaystyle{biblegateway.com}%
     {biblegateway.com-url}{fullname}
 %    \end{macrocode}
+%
+% \section{Unit tests}
+%
+% To avoid regressions, some tests are performed here.
+%
+% \definebiblestyle{bookonly}{\thebiblebook{#1}}
+%
+% ^^A \brmunittest{passage specification}{expected result}{success handler}{failure handler}
+% \newcommand{\brmunittestbook}[4]{^^A
+%   \begingroup
+%   \setbiblestyle{bookonly}^^A
+%   \edef\testa{\bibleref{#1}}^^A
+%   \edef\testb{\csuse{brm@expandcs}{#2}}^^A
+%   \ifdefequal{\testa}{\testb}{#3}{#4}^^A
+%   \endgroup
+% }
+% \subsection{Parsing of Book Names}
+%
+% ^^A \checkaliases{standard name}{aliases to check and show}{aliases to check silently}
+% \newcommand{\checkaliases}[3]{^^A
+%   \csuse{br@#1}&^^A
+%   \foreach \alias/\aliasname in {#2} {^^A
+%     \brmunittestbook{\alias}{#1}{\aliasname\ }{^^A
+%       \textcolor{red}{\aliasname} ^^A
+%       \PackageError{bibleref-mouth}{Book name `\alias' not recognised as `#1'}{}{}^^A
+%     }^^A
+%   }^^A
+%   \foreach \alias/\aliasname in {#3} {^^A
+%     \brmunittestbook{\alias}{#1}{}{^^A
+%       \textcolor{red}{\aliasname} ^^A
+%       \PackageError{bibleref-mouth}{Book name `\alias' not recognised as `#1'}{}{}^^A
+%     }^^A
+%   }\\
+% }
+%
+% \subsubsection{English Book Names}
+% \begin{longtable}{@{}lp{.75\linewidth}@{}}
+% \toprule\textbf{Book}&\textbf{Aliases}\\\midrule
+% \endhead
+% \bottomrule
+% \endfoot
+% \checkaliases{Genesis}{Genesis,Gen,Ge,Gn,Ge*,Gn*}{}
+% \checkaliases{Exodus}{Exodus,Exod,Ex,Ex*}{}
+% \checkaliases{Leviticus}{Leviticus,Lev,Lv,Le*,Lv*}{}
+% \checkaliases{Numbers}{Numbers,Num,Nb,Nu*,Nb*}{}
+% \checkaliases{Deuteronomy}{Deuteronomy,Deut,Deu,Dt,De*,Dt*}{}
+% \checkaliases{Joshua}{Joshua,Josh,Jos,Jos*}{}
+% \checkaliases{Judges}{Judges,Judg,Jdg,Jg,Jd,Judg*,Jdg*,Jg*}{}
+% \checkaliases{Ruth}{Ruth,Rt,Ru*,Rt*}{}
+% \checkaliases{ISamuel}{1Samuel,1Sam,1S,1S*}{ISamuel,ISam,IS,IS*,1.Samuel,I.Samuel,1.Sam,I.Sam,I.S,1.S*,I.S*}
+% \checkaliases{IISamuel}{2Samuel,2Sam,2S,2S*}{IISamuel,IISam,IIS,IIS*,2.Samuel,II.Samuel,2.Sam,II.Sam,II.S,2.S*,II.S*}
+% \checkaliases{IKings}{1Kings,1K,1Kg,1Kgs,1Ki*,1Kg*}{IKings,IK,IKg,IKgs,IKi*,IKg*,1.Kings,1.K,1.Kg,1.Kgs,1.Ki*,1.Kg*,I.K,I.Kg,I.Ki*,I.Kg*}
+% \checkaliases{IIKings}{2Kings,2K,2Kg,2Kgs,2Ki*,2Kg*}{IIKings,IIK,IIKg,IIKgs,IIKi*,IIKg*,2.Kings,2.K,2.Kg,2.Kgs,2.Ki*,2.Kg*,II.K,II.Kg,II.Ki*,II.Kg*}
+% \checkaliases{IChronicles}{1Chronicles,1Ch,1Chr,1Ch*}{IChronicles,ICh,IChr,ICh*,1.Chronicles,1.Ch,1.Chr,1.Ch*,I.Chronicles,I.Ch,I.Chr,I.Ch*}
+% \checkaliases{IIChronicles}{2Chronicles,2Ch,2Chr,2Ch*}{IIChronicles,IICh,IIChr,IICh*,2.Chronicles,2.Ch,2.Chr,2.Ch*,II.Chronicles,II.Ch,II.Chr,II.Ch*}
+% \checkaliases{Ezra}{Ezra,Ezr,Ezr*}{}
+% \checkaliases{Nehemiah}{Nehemiah,Neh,Ne,Ne*}{}
+% \checkaliases{Esther}{Esther,Esth,Est,Est*}{}
+% \checkaliases{Job}{Job,Jb}{}
+% \checkaliases{Psalms}{Psalms,Psalm,Ps,Ps*}{}
+% \checkaliases{Proverbs}{Proverbs,Prov,Pro,Pr/Pr\textsuperscript{(not German)},Pro*}{}
+% \checkaliases{Ecclesiastes}{Ecclesiastes,Eccl,Ec,Qo,Ecl,Eccl,Eccle,Eccles,Ecclesiaste*,Q*}{Ecclesi,Ecclesia,Ecclesias,Ecclesiast}
+% \checkaliases{SongofSongs}{SongofSolomon,SongofSongs,SofS,Sg/Sg\textsuperscript{(not French)},So/So\textsuperscript{(not French)},Son*}{}
+% \checkaliases{Isaiah}{Isaiah,Isa,Is,Is*}{}
+% \checkaliases{Jeremiah}{Jeremiah,Jer,Jr,Jer*,Jr*}{}
+% \checkaliases{Lamentations}{Lamentations,Lam,Lm,La*,Lm*}{}
+% \checkaliases{Ezekiel}{Ezekiel,Ezek,Ezk,Eze*,Ezk*}{}
+% \checkaliases{Daniel}{Daniel,Dan,Dn,Da*,Dn*}{}
+% \checkaliases{Hosea}{Hosea,Hos,Ho,Hos*}{}
+% \checkaliases{Joel}{Joel,Jl,Joe*,Jl*}{}
+% \checkaliases{Amos}{Amos,Am,Am*}{}
+% \checkaliases{Obadiah}{Obadiah,Obad,Obd,Ob,Ob*}{}
+% \checkaliases{Jonah}{Jonah,Jon,Jnh,Jon*}{}
+% \checkaliases{Micah}{Micah,Mic,Mi,Mi*}{}
+% \checkaliases{Nahum}{Nahum,Nah,Na,Na*}{}
+% \checkaliases{Habakkuk}{Habakkuk,Hab,Hbk,Hak,Hab*,Hb*,Hak*}{}
+% \checkaliases{Zephaniah}{Zephaniah,Zeph,Zp,Zep*,Zp*}{}
+% \checkaliases{Haggai}{Haggai,Hag,Hg,Hag*,Hg*}{}
+% \checkaliases{Zechariah}{Zechariah,Zech,Zc,Zec*,Zc*}{}
+% \checkaliases{Malachi}{Malachi,Mal,Ml,Mal*,Ml*}{}
+% \midrule
+% \checkaliases{Matthew}{Matthew,Matt,Mt,Mat*,Mt*}{}
+% \checkaliases{Mark}{Mark,Mk,Mar*,Mk*}{}
+% \checkaliases{Luke}{Luke,Lk,Lu*,Lk*}{}
+% \checkaliases{John}{John,Joh,Jn,Jhn,Joh*,Jh*}{}
+% \checkaliases{Acts}{Acts,Ac,Ac*}{}
+% \checkaliases{Romans}{Romans,Rom,Ro,Rm,Ro*,Rm*}{}
+% \checkaliases{ICorinthians}{1Corinthians,1Co,1Cor,1Co*}{ICorinthians,ICo,ICor,ICo*,IKorinther,IKor,IKo,IKor*,1.Corinthians,1.Co,1.Cor,1.Co*,I.Corinthians,I.Co,I.Cor,I.Co*}
+% \checkaliases{IICorinthians}{2Corinthians,2Co,2Cor,2Co*}{IICorinthians,IICo,IICor,IICo*,IIKorinther,IIKor,IIKo,IIKor*,2.Corinthians,2.Co,2.Cor,2.Co*,II.Corinthians,II.Co,II.Cor,II.Co*}
+% \checkaliases{Galatians}{Galatians,Gal,Ga,Ga*}{}
+% \checkaliases{Ephesians}{Ephesians,Eph,Ep,Eph*}{}
+% \checkaliases{Philippians}{Philippians,Phil,Phi,Ph,Php,Phili*,Php*}{}
+% \checkaliases{Colossians}{Colossians,Col,C*}{}
+% \checkaliases{IThessalonians}{1Thessalonians,1Thess,1Th,1Th*}{IThessalonians,IThess,ITh,ITh*,1.Thessalonians,1.Thess,1.Th,1.Th*,I.Thessalonians,I.Thess,I.Th,I.Th*}
+% \checkaliases{IIThessalonians}{2Thessalonians,2Thess,2Th,2Th*}{IIThessalonians,IIThess,IITh,IITh*,2.Thessalonians,2.Thess,2.Th,2.Th*,II.Thessalonians,II.Thess,II.Th,II.Th*}
+% \checkaliases{ITimothy}{1Timothy,1Tim,1Tm,1Ti*,1Tm*}{ITimothy,ITim,ITm,ITi*,ITm*,1.Timothy,1.Tim,1.Tm,1.Ti*,1.Tm*,I.Timothy,I.Tim,I.Tm,I.Ti*}
+% \checkaliases{IITimothy}{2Timothy,2Tim,2Tm,2Ti*,2Tm*}{IITimothy,IITim,IITm,IITi*,IITm*,2.Timothy,2.Tim,2.Tm,2.Ti*,2.Tm*,II.Timothy,II.Tim,II.Tm,II.Ti*}
+% \checkaliases{Titus}{Titus,Tit,Tt,Tit*,Tt*}{}
+% \checkaliases{Philemon}{Philemon,Philem,Phlm,Phm,Phile*,Phim*,Phl*,Phm*}{}
+% \checkaliases{Hebrews}{Hebrews,Hebr,Heb,He,Heb*}{}
+% \checkaliases{James}{James,Jas,Js,Jm,Ja*,Js*,Jm*}{}
+% \checkaliases{IPeter}{1Peter,1Pet,1Pt,1P,1P*}{IPeter,IPet,IPt,IP,IP*,1.Peter,1.Pet,1.Pt,1.P,1.P*,I.Peter,I.Pet,I.Pt,I.P,I.P*}
+% \checkaliases{IIPeter}{2Peter,2Pet,2Pt,2P,2P*}{IIPeter,IIPet,IIPt,IIP,IIP*,2.Peter,2.Pet,2.Pt,2.P,2.P*,II.Peter,II.Pet,II.Pt,II.P,II.P*}
+% \checkaliases{IJohn}{1John,1Joh,1Jo,1Jo*,1Jn*}{IJohn,IJoh,IJo,IJo*,IJn*,IJh,IJh*,1.John,1.Joh,1.Jo,1.Jo*,1.Jn*,I.John,I.Joh,I.Jo,I.Jo*,I.Jn*}
+% \checkaliases{IIJohn}{2John,2Joh,2Jo,2Jo*,2Jn*}{IIJohn,IIJoh,IIJo,IIJo*,IIJn*,IIJh,IIJh*,2.John,2.Joh,2.Jo,2.Jo*,2.Jn*,II.John,II.Joh,II.Jo,II.Jo*,II.Jn*}
+% \checkaliases{IIIJohn}{3John,3Joh,3Jo,3Jo*,3Jn*}{IIIJohn,IIIJoh,IIIJo,IIIJo*,IIIJn*,IIIJh,IIIJh*,3.John,3.Joh,3.Jo,3.Jo*,3.Jn*,III.John,III.Joh,III.Jo,III.Jo*,III.Jn*}
+% \checkaliases{Jude}{Jude,Jud,Jude*}{}
+% \checkaliases{Revelation}{Revelation,Rev,Rv,Rev*,Rv*}{}
+% \midrule
+% \checkaliases{Tobit}{Tobit,Tob,Tb,To*,Tb*}{}
+% \checkaliases{Judith}{Judith,Jdt,Judi*,Jdt*}{}
+% \checkaliases{AddEsther}{GreekEsther,GrEst,AddEst,AdditionstoE*,AdditionsE*,AddE*,GreekE*,GrE*}{AdditionstoEsther}
+% \checkaliases{Wisdom}{Wisdom,WisdomofSolomon,Ws,W*}{}
+% \checkaliases{Ecclesiasticus}{Sirach,Ecclesiasticus,Ecclus,Si*,Ecclesiasti*,Ecclu*}{}
+% \checkaliases{Baruch}{Baruch,Ba*}{}
+% \checkaliases{EpJeremiah}{EpistleofJeremiah,EpistleJeremiah,EpJer,EpistleofJer*,EpistleJer*,EpJer*}{}
+%   \checkaliases{AddDaniel}{AddDan,GreekDaniel,GrDan,AdditionstoD*,AdditionsD*,AddD*,GreekD*,GrD*}{AdditionstoDaniel}
+% \checkaliases{IMaccabees}{1Maccabees,1Ma*}{IMa*,1.Maccabees,1.Ma*;I.Maccabees,I.Ma*}
+% \checkaliases{IIMaccabees}{2Maccabees,2Ma*}{IIMa*,2.Maccabees,2.Ma*;II.Maccabees,II.Ma*}
+% \end{longtable}
+% 
+%
+% \subsubsection{French Book Names}
+%
+% \begin{otherlanguage}{french}
+% \begin{longtable}{@{}lp{.75\linewidth}@{}}
+% \toprule\textbf{Book}&\textbf{Aliases}\\\midrule
+% \endhead
+% \bottomrule
+% \endfoot
+% \checkaliases{Genesis}{Genèse,Gen,Ge,Gn,Ge*,Gn*}{}
+% \checkaliases{Exodus}{Exode,Exod,Ex,Ex*}{}
+% \checkaliases{Leviticus}{Lévitique,Lév,Lv,Lé*,Lv*}{Levitique,Lev,Le*}
+% \checkaliases{Numbers}{Nombres,Nom,Nb,No*,Nb*}{}
+% \checkaliases{Deuteronomy}{Deutéronome,Deut,Deu,Dt,De*,Dt*}{}
+% \checkaliases{Joshua}{Josué,Jos,Jos*}{}
+% \checkaliases{Judges}{Juges,Jug,Jg,Jug*}{}
+% \checkaliases{Ruth}{Ruth,Rt,Ru*,Rt*}{}
+% \checkaliases{ISamuel}{1Samuel,1Sam,1S,1S*}{ISamuel,ISam,IS,IS*,1.Samuel,I.Samuel,1.Sam,I.Sam,I.S,1.S*,I.S*}
+% \checkaliases{IISamuel}{2Samuel,2Sam,2S,2S*}{IISamuel,IISam,IIS,IIS*,2.Samuel,II.Samuel,2.Sam,II.Sam,II.S,2.S*,II.S*}
+% \checkaliases{IKings}{1Rois,1R,1Ro,1R*}{IRois,IR,IRo,IRo*,1.Rois,1.R,1.Ro,1.Ro*,I.R,I.Ro,I.Ro*}
+% \checkaliases{IIKings}{2Rois,2R,2Ro,2Ro*}{IIRois,IIR,IIRo,IIRo*,2.Rois,2.R,2.Ro,2.Ro*,II.R,II.Ro,II.Ro*}
+% \checkaliases{IChronicles}{1Chroniques,1Ch,1Chr,1Ch*}{IChroniques,ICh,IChr,ICh*,1.Chroniques,1.Ch,1.Chr,1.Ch*,I.Chroniques,I.Ch,I.Chr,I.Ch*}
+% \checkaliases{IIChronicles}{2Chroniques,2Ch,2Chr,2Ch*}{IIChroniques,IICh,IIChr,IICh*,2.Chroniques,2.Ch,2.Chr,2.Ch*,II.Chroniques,II.Ch,II.Chr,II.Ch*}
+% \checkaliases{Ezra}{Esdras,Esd,Esd*}{}
+% \checkaliases{Nehemiah}{Néhémie,Néh,Né,Neh,Ne,Né*,Ne*}{N\'e*}
+% \checkaliases{Esther}{Esther,Esth,Est,Est*}{}
+% \checkaliases{Job}{Job,Jb}{}
+% \checkaliases{Psalms}{Psaumes,Psaum,Ps,Ps*}{}
+% \checkaliases{Proverbs}{Proverbes,Prov,Pro,Pr/Pr\textsuperscript{(not German)},Pro*}{}
+% \checkaliases{Ecclesiastes}{Qohélet,Qo,Q*}{Qohelet}
+% \checkaliases{SongofSongs}{Cantiquesdescantiques,Can*}{}
+% \checkaliases{Isaiah}{Isaïe,Esaïe,Isa,Esa,Is,Es,Is*,Es*}{Isaie,Esaie,Isa\"ie,Esa\"ie}
+% \checkaliases{Jeremiah}{Jérémie,Jér,Jr,Jér*,Jr*}{Jeremie,Jer,Jer*}
+% \checkaliases{Lamentations}{Lamentations,Lam,Lm,La*,Lm*}{}
+% \checkaliases{Ezekiel}{Ezéquiel,Ezék,Ezk,Ezé*,Ezk*}{Ezequiel,Ezek,Eze*}
+% \checkaliases{Daniel}{Daniel,Dan,Dn,Da*,Dn*}{}
+% \checkaliases{Hosea}{Osée,Os,Os*}{}
+% \checkaliases{Joel}{Joël,Jl,Joë*,Jl*}{Joel,Joe*}
+% \checkaliases{Amos}{Amos,Am,Am*}{}
+% \checkaliases{Obadiah}{Abdias,Abd,Ab*}{}
+% \checkaliases{Jonah}{Jonas,Jon,Jns,Jon*}{}
+% \checkaliases{Micah}{Michée,Mic,Mi,Mi*}{}
+% \checkaliases{Nahum}{Nahum,Nah,Na,Na*}{}
+% \checkaliases{Habakkuk}{Habaquq,Hab,Hbq,Haq,Hab*,Hb*,Haq*}{}
+% \checkaliases{Zephaniah}{Sophonie,Soph,So/So\textsuperscript{(only French)},Sop*}{}
+% \checkaliases{Haggai}{Aggée,Agg,Ag*}{}
+% \checkaliases{Zechariah}{Zacharie,Zach,Zc,Zac*,Zc*}{}
+% \checkaliases{Malachi}{Malachie,Mal,Ml,Mal*,Ml*}{}
+% \midrule
+% \checkaliases{Matthew}{Matthieu,Matt,Mt,Mat*,Mt*}{}
+% \checkaliases{Mark}{Marc,Mc,Mar*,Mc*}{}
+% \checkaliases{Luke}{Luc,Lc,Lu*}{}
+% \checkaliases{John}{Jean,Jn,Jea*,Jn*}{}
+% \checkaliases{Acts}{Actes,Ac,Ac*}{}
+% \checkaliases{Romans}{Romains,Rom,Ro,Rm,Ro*,Rm*}{}
+% \checkaliases{ICorinthians}{1Corinthiens,1Co,1Cor,1Co*}{ICorinthiens,ICo,ICor,ICo*,1.Corinthiens,1.Co,1.Cor,1.Co*,I.Corinthiens,I.Co,I.Cor,I.Co*}
+% \checkaliases{IICorinthians}{2Corinthiens,2Co,2Cor,2Co*}{IICorinthiens,IICo,IICor,IICo*,2.Corinthiens,2.Co,2.Cor,2.Co*,II.Corinthiens,II.Co,II.Cor,II.Co*}
+% \checkaliases{Galatians}{Galates,Gal,Ga,Ga*}{}
+% \checkaliases{Ephesians}{Éphésiens,Éph,Ép,Éph*}{Ephesiens,Eph,Ep,Eph*}
+% \checkaliases{Philippians}{Philippiens,Phil,Phi,Ph,Php,Phili*,Php*}{}
+% \checkaliases{Colossians}{Colossiens,Col,C*}{}
+% \checkaliases{IThessalonians}{1Thessaloniciens,1Thess,1Th,1Th*}{IThessaloniciens,IThess,ITh,ITh*,1.Thessaloniciens,1.Thess,1.Th,1.Th*,I.Thessaloniciens,I.Thess,I.Th,I.Th*}
+% \checkaliases{IIThessalonians}{2Thessaloniciens,2Thess,2Th,2Th*}{IIThessaloniciens,IIThess,IITh,IITh*,2.Thessaloniciens,2.Thess,2.Th,2.Th*,II.Thessaloniciens,II.Thess,II.Th,II.Th*}
+% \checkaliases{ITimothy}{1Timothée,1Tim,1Tm,1Ti*,1Tm*}{ITimothée,ITim,ITm,ITi*,ITm*,1.Timothée,1.Tim,1.Tm,1.Ti*,1.Tm*,I.Timothée,I.Tim,I.Tm,I.Ti*}
+% \checkaliases{IITimothy}{2Timothée,2Tim,2Tm,2Ti*,2Tm*}{IITimothée,IITim,IITm,IITi*,IITm*,2.Timothée,2.Tim,2.Tm,2.Ti*,2.Tm*,II.Timothée,II.Tim,II.Tm,II.Ti*}
+% \checkaliases{Titus}{Tite,Tit,Tt,Tit*,Tt*}{}
+% \checkaliases{Philemon}{Philémon,Philém,Phlm,Phm,Philé*,Phim*,Phl*,Phm*}{}
+% \checkaliases{Hebrews}{Hébreux,Hébr,Héb,Hé,Héb*}{Hebreux,Hebr,Heb,Heb*}
+% \checkaliases{James}{Jaques,Jaq,Jq,Ja*,Jq*}{}
+% \checkaliases{IPeter}{1Pierre,1P,1P*}{IPierre,IP,IP*,1.Pierre,1.P,1.P*,I.Pierre,I.P,I.P*}
+% \checkaliases{IIPeter}{2Pierre,2P,2P*}{IIPierre,IIP,IIP*,2.Pierre,2.P,2.P*,II.Pierre,II.P,II.P*}
+% \checkaliases{IJohn}{1Jean,1Jn,1Jn*}{IJean,IJn*,1.Jean,1.Jn*,I.Jean,I.Jn*}
+% \checkaliases{IIJohn}{2Jean,2Jn,2Jn*}{IIJean,IIJn*,2.Jean,2.Jn*,II.Jean,II.Jn*}
+% \checkaliases{IIIJohn}{3Jean,3Jn,3Jn*}{IIIJean,IIIJn*,3.Jean,3.Jn*,III.Jean,III.Jn*}
+% \checkaliases{Jude}{Jude,Jud,Jude*}{}
+% \checkaliases{Revelation}{Apocalypse,Ap,Apo/Apo\textsuperscript{(only French)},Apoc,Apoc*}{}
+% \midrule
+% \checkaliases{Tobit}{Tobit,Tob,Tb,To*,Tb*}{}
+% \checkaliases{Judith}{Judith,Jdt,Judi*,Jdt*}{}
+% ^^A\checkaliases{AddEsther}{GreekEsther,GrEst,AddEst,AdditionstoE*,AdditionsE*,AddE*,GreekE*,GrE*}{AdditionstoEsther}
+% \checkaliases{Wisdom}{Sagesse,Sag,Sg/Sg\textsuperscript{(only French)},Sag*}{}
+% \checkaliases{Ecclesiasticus}{Siracide,Si*}{}
+% \checkaliases{Baruch}{Baruch,Ba*}{}
+% ^^A\checkaliases{EpJeremiah}{EpistleofJeremiah,EpistleJeremiah,EpJer,EpistleofJer*,EpistleJer*,EpJer*}{}
+% ^^A\checkaliases{AddDaniel}{AddDan,GreekDaniel,GrDan,AdditionstoD*,AdditionsD*,AddD*,GreekD*,GrD*}{AdditionstoDaniel}
+% \checkaliases{IMaccabees}{1Maccabées,1Ma*}{IMa*,1.Maccabées,1.Ma*;I.Maccabées,I.Ma*}
+% \checkaliases{IIMaccabees}{2Maccabées,2Ma*}{IIMa*,2.Maccabées,2.Ma*;II.Maccabées,II.Ma*}
+% \end{longtable}
+% \end{otherlanguage}
+%
+% \subsubsection{German Book Names}
+%
+% \begin{otherlanguage}{ngerman}
+% \begin{longtable}{@{}lp{.75\linewidth}@{}}
+% \toprule\textbf{Book}&\textbf{Aliases}\\\midrule
+% \endhead
+% \bottomrule
+% \endfoot
+% \checkaliases{Genesis}{1Mose,1Mos,1Mo,Genesis,Gen,Ge,Gn,1Mo*,Ge*,Gn*}{IMose,IMos,IMo,IMo*}
+% \checkaliases{Exodus}{2Mose,2Mos,2Mo,Exodus,Ex,2Mo*,Ex*}{IIMose,IIMos,IIMo,IIMo*}
+% \checkaliases{Leviticus}{3Mose,3Mos,3Mo,Levitikus,Leviticus,Lev,Lv,3M*,Le*,Lv*}{IIIMose,IIIMos,IIIMo,IIIM*}
+% \checkaliases{Numbers}{4Mose,4Mos,4Mo,Numeri,Num,4M*,Nu*}{IVMose,IVMos,IVMo,IV*}
+% \checkaliases{Deuteronomy}{5Mose,5Mos,5Mo,Deuteronomium,Deut,Dtn,Deu,Dt,5M*,De*,Dt*}{VMose,VMos,VMo,V*}
+% \checkaliases{Joshua}{Josua,Jos*}{}
+% \checkaliases{Judges}{Richter,Ri,Ri*}{}
+% \checkaliases{Ruth}{Rut,Ruth,Rt,Ru,Ru*,Rt*}{}
+% \checkaliases{ISamuel}{1Samuel,1Sam,1S,1S*}{ISamuel,ISam,IS,IS*}
+% \checkaliases{IISamuel}{2Samuel,2Sam,2S,2S*}{IISamuel,IISam,IIS,IIS*}
+% \checkaliases{IKings}{1Könige,1Kön,1Kö,1Kö*}{IK,IKg,IKg*,IKönige,IKön,IKö,IKö*,IK\"onige,IK"on,IKoe,IK\"o*}
+% \checkaliases{IIKings}{2Könige,2Kön,2Kö,2Kö*}{IIK,IIKg,IIKi*,IIKg*,IIKönige,IIKön,IIKö,IIKö}
+% \checkaliases{IChronicles}{1Chronik,1Chr,1Ch,1Ch*}{ICh,IChr,ICh*,IChronik}
+% \checkaliases{IIChronicles}{2Chronik,2Chr,2Ch,2Ch*}{IICh,IIChr,IICh*,IIChronik}
+% \checkaliases{Ezra}{Esra,Esr,Esr*}{}
+% \checkaliases{Nehemiah}{Nehemia,Nehemiah,Neh,Ne,Ne*}{}
+% \checkaliases{Esther}{Ester,Esther,Est,Est*}{}
+% \checkaliases{Job}{Hiob,Hi,Ijob,Hi*,Ij*}{}
+% \checkaliases{Psalms}{Psalmen,Psalm,Psalter,Ps,Ps*}{}
+% \checkaliases{Proverbs}{Sprüche,Sprichwörter,Spr,Sp,Sp*}{}
+% \checkaliases{Ecclesiastes}{Prediger,Pred,Pr/Pr\textsuperscript{(only German)},Kohelet,Koh,Pre*,Koh*}{Ecclesi,Ecclesia,Ecclesias,Ecclesiast}
+% \checkaliases{SongofSongs}{Hohelied,Hoheslied,HohesLied,Hld,Hhld,LiedderLieder,Lied,Hoh*,Hh*,Hl*,Li*}{}
+% \checkaliases{Isaiah}{Jesaja,Jesajah,Jes,Jesa*}{}
+% \checkaliases{Jeremiah}{Jeremia,Jeremiah,Jer,Jr,Jer*,Jr*}{}
+% \checkaliases{Lamentations}{Klagelieder,Klgl,Klg,Kl*}{}
+% \checkaliases{Ezekiel}{Hesekiel,Hes,Ezechiel,Ez,Eze,Hes*,Eze*}{}
+% \checkaliases{Daniel}{Daniel,Dan,Dn,Da*,Dn*}{}
+% \checkaliases{Hosea}{Hosea,Hos,Ho,Hos*}{}
+% \checkaliases{Joel}{Joel,Joël,Jl,Joe*,Joë*,Jl*}{Jo\"e*,Jo"e*}
+% \checkaliases{Amos}{Amos,Am,Am*}{}
+% \checkaliases{Obadiah}{Obadja,Obad,Obd,Ob,Ob*}{}
+% \checkaliases{Jonah}{Jona,Jonah,Jon,Jon*}{}
+% \checkaliases{Micah}{Micha,Mic,Mi,Mi*}{}
+% \checkaliases{Nahum}{Nahum,Nah,Na,Na*}{}
+% \checkaliases{Habakkuk}{Habakuk,Hab,Hbk,Hak,Hab*,Hb*,Hak*}{}
+% \checkaliases{Zephaniah}{Zefanja,Zefanjah,Zef,Zef*}{}
+% \checkaliases{Haggai}{Haggai,Hag,Hg,Hag*,Hg*}{}
+% \checkaliases{Zechariah}{Sacharja,Sacharjah,Sach,Sa,Sa*}{}
+% \checkaliases{Malachi}{Maleachi,Mal,Ml,Mal*,Ml*}{}
+% \midrule
+% \checkaliases{Matthew}{Matthäus,Matt,Mt,Mat*,Mt*}{}
+% \checkaliases{Mark}{Markus,Mk,Mar*,Mk*}{}
+% \checkaliases{Luke}{Lukas,Lk,Lu*,Lk*}{}
+% \checkaliases{John}{Johannes,Joh,Jh,Jhn,Joh*,Jh*}{}
+% \checkaliases{Acts}{Apostelgeschichte,Apo/\textsuperscript{(not French)},Apg,Apos*,Apg*}{}
+% \checkaliases{Romans}{Römer,Röm,Rö}{Roemer,R\"omer,R"omer,Roem,R\"om,R"om,Roe,R\"o,R"o,Roe*,R\"o*,R"o*}
+% \checkaliases{ICorinthians}{1Korinther,1Kor,1Ko,1Kor*}{ICorinthians,ICo,ICor,ICo*,IKorinther,IKor,IKo,IKor*}
+% \checkaliases{IICorinthians}{2Korinther,2Kor,2Ko,2Kor*}{IICorinthians,IICo,IICor,IICo*,IIKorinther,IIKor,IIKo,IIKor*}
+% \checkaliases{Galatians}{Galater,Gal,Ga,Ga*}{}
+% \checkaliases{Ephesians}{Epheser,Eph,Eph*}{}
+% \checkaliases{Philippians}{Philipper,Phil,Phi,Ph,Phili*}{}
+% \checkaliases{Colossians}{Kolosser,Kol,Kol*}{}
+% \checkaliases{IThessalonians}{1Thessalonicher,1Thessaloniker,1Thess,1Th,1Th*}{IThessalonians,IThess,ITh,ITh*,IThessalonicher,IThessaloniker}
+% \checkaliases{IIThessalonians}{2Thessaloniker,2Thess,2Th,2Th*}{IIThessalonians,IIThess,IITh,IITh*,IIThessaloniker}
+% \checkaliases{ITimothy}{1Timotheus,1Tim,1Tm,1Ti*,1Tm*}{ITimothy,ITim,ITm,ITi*,ITm*,ITimotheus}
+% \checkaliases{IITimothy}{2Timotheus,2Tim,2Tm,2Ti*,2Tm*}{IITimothy,IITim,IITm,IITi*,IITm*,IITimotheus}
+% \checkaliases{Titus}{Titus,Tit,Tt,Tit*,Tt*}{}
+% \checkaliases{Philemon}{Philemon,Philem,Phlm,Phm,Phile*,Phim*,Phl*,Phm*}{}
+% \checkaliases{Hebrews}{Hebräer,Hebr,Heb,He,Heb*}{Hebraeer,Hebr\"aer,Hebr"aer}
+% \checkaliases{James}{Jakobus,Jak,Jk,Ja,Ja*,Jk*}{}
+% \checkaliases{IPeter}{1Petrus,1Petr,1Pet,1Pt,1P*}{IPeter,IPet,IPt,IP,IP*}
+% \checkaliases{IIPeter}{2Petrus,2Petr,2Pet,2Pt,2P*}{IIPeter,IIPet,IIPt,IIP,IIP*}
+% \checkaliases{IJohn}{1Johannes,1Joh,1Jh,1Jo*,1Jh*}{IJohn,IJoh,IJo,IJo*,IJn*,IJohannes,IJh,IJh*}
+% \checkaliases{IIJohn}{2Johannes,2Joh,2Jh,2Jo*,2Jh*}{IIJohn,IIJoh,IIJo,IIJo*,IIJn*,IIJohannes,IIJh,IIJh*}
+% \checkaliases{IIIJohn}{3Johannes,3Joh,3Jh,3Jo*,3Jh*}{IIIJohn,IIIJoh,IIIJo,IIIJo*,IIIJn*,IIIJohannes,IIIJh,IIIJh*}
+% \checkaliases{Jude}{Judas,Jud,Juda*}{}
+% \checkaliases{Revelation}{Offenbarung,Offb,Ofb,Apokalypse,Apok,Apk,Of*,Apok*,Apk*}{}
+% \midrule
+% \checkaliases{Tobit}{Tobit,Tobias,Tob,Tb,To*,Tb*}{}
+% \checkaliases{Judith}{Judit,Judith,Jdt,Judi*,Jdt*}{}
+% \checkaliases{AddEsther}{StückezuEster,StückeEster,StEst,GrEst,StückezuE*,StückeE*,StE*}{StueckezuE*,StueckeE*,St\"uckezuE*,St\"uckeE*,St"uckezuE*,St"uckeE*,AdditionstoEsther}
+% \checkaliases{Wisdom}{Weisheit,WeisheitSalomos,Weish,W*}{}
+% \checkaliases{Ecclesiasticus}{Sirach,JesusSirach,Si*,JesusS*}{}
+% \checkaliases{Baruch}{Baruch,Ba*}{}
+% \checkaliases{EpJeremiah}{BriefdesJeremia,BriefJeremias,BrJer,BriefdesJer*,BriefJer*,BrJer*}{}
+%   \checkaliases{AddDaniel}{StückezuDaniel,StückeDaniel,StDan,GrDan,StückezuD*,StückeD*,StD*}{StueckezuD*,StueckeD*,St\"uckezuD*,St\"uckeD*,St"uckezuD*,St"uckeD*,AdditionstoDaniel}
+% \checkaliases{IMaccabees}{1Makkabäer,1Makk,1Ma*}{IMa*}
+% \checkaliases{IIMaccabees}{2Makkabäer,2Makk,2Ma*}{IIMa*}
+% \end{longtable}
+%   
+% \end{otherlanguage}
 % \Finale
 \endinput
+% ^^A Local IspellDict: en
