@@ -17,6 +17,9 @@ Then put bibleref-lds.sty into a directory searched by TeX.
 To extract the documentation, run:
  * pdflatex bibleref-lds.dtx
 
+To view the latest development version, visit:
+ * https://github.com/chadparry/bibleref/tree/master/bibleref-lds
+
 Copyright 2012 Chad Parry
 
 This work may be distributed and/or modified under the
